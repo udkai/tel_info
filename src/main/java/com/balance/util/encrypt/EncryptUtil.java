@@ -69,6 +69,6 @@ public class EncryptUtil {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(EncryptUtil.getMd5("123456"));
+		System.out.println(EncryptUtil.getMd5("123456-123456"));
 	}
 }

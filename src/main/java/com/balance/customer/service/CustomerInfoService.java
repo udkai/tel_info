@@ -2,30 +2,20 @@ package com.balance.customer.service;
 
 
 import com.balance.common.dao.CommonDao;
-import com.balance.common.vo.ComboboxVO;
 import com.balance.customer.VO.CustomerInfoSearchVO;
 import com.balance.customer.dao.CustomerInfoDao;
 import com.balance.customer.model.CustomerInfo;
 import com.balance.customer.model.User;
 import com.balance.customer.util.StatusUtil;
-import com.balance.sys.model.SysUser;
-import com.balance.util.code.SerialNumUtil;
 import com.balance.util.date.DateUtil;
-import com.balance.util.encrypt.EncryptUtil;
 import com.balance.util.excel.Excel2007Util;
-import com.balance.util.excel.ExcelUtil;
 import com.balance.util.string.StringUtil;
 import com.balance.util.web.WebUtil;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -216,32 +206,36 @@ public class CustomerInfoService {
         return listTrans;
     }
 
-    public void export(CustomerInfoSearchVO customerInfoSearchVO, HttpServletResponse response) {
+    public void export(CustomerInfoSearchVO customerInfoSearchVO, String templatePath, HttpServletResponse response) {
         List<CustomerInfo> dataList = customerInfoDao.export(customerInfoSearchVO);
         String[][] data = null;
 
         long sumMoney = 0;
 //    if (dataList.size() <= 10000) {
-        data = new String[dataList.size() + 2][8];
-        data[0][0] = "客户编号";
-        data[0][1] = "姓名";
-        data[0][2] = "电话号码";
-        data[0][3] = "备注";
-        data[0][4] = "客户状态";
-        data[0][5] = "所属业务员编号";
-        data[0][6] = "所属业务员姓名";
-        data[0][7] = "操作日期";
+        data = new String[dataList.size()][8];
+//        data[0][0] = "客户编号";
+//        data[0][1] = "姓名";
+//        data[0][2] = "电话号码";
+//        data[0][3] = "备注";
+//        data[0][4] = "客户状态";
+//        data[0][5] = "所属业务员编号";
+//        data[0][6] = "所属业务员姓名";
+//        data[0][7] = "操作日期";
 
         for (int i = 0; i < dataList.size(); i++) {
             CustomerInfo customerInfo = dataList.get(i);
-            data[i + 1][0] = WebUtil.getSafeStr(customerInfo.getId());
-            data[i + 1][1] = WebUtil.getSafeStr(customerInfo.getName());
-            data[i + 1][2] = WebUtil.getSafeStr(customerInfo.getMobile());
-            data[i + 1][3] = WebUtil.getSafeStr(customerInfo.getRemark());
-            data[i + 1][4] = WebUtil.getSafeStr(StatusUtil.parseStatus(customerInfo.getCustomer_status()));
-            data[i + 1][5] = WebUtil.getSafeStr(customerInfo.getUser_id());
-            data[i + 1][6] = WebUtil.getSafeStr(customerInfo.getUser_name());
-            data[i + 1][7] = WebUtil.getSafeStr(DateUtil.dateToString(customerInfo.getLast_modify_at(),"yyyy-MM-dd HH:mm:ss"));
+            data[i][0] = WebUtil.getSafeStr(customerInfo.getId());
+            data[i][1] = WebUtil.getSafeStr(customerInfo.getName());
+            data[i][2] = WebUtil.getSafeStr(customerInfo.getMobile());
+            data[i][3] = WebUtil.getSafeStr(customerInfo.getRemark());
+            data[i][4] = WebUtil.getSafeStr(StatusUtil.parseStatus(customerInfo.getCustomer_status()));
+            data[i][5] = WebUtil.getSafeStr(customerInfo.getUser_id());
+            data[i][6] = WebUtil.getSafeStr(customerInfo.getUser_name());
+            if (customerInfo.getLast_modify_at() == null) {
+                data[i][7] = "";
+            } else {
+                data[i][7] = WebUtil.getSafeStr(DateUtil.dateToString(customerInfo.getLast_modify_at(), "yyyy-MM-dd HH:mm:ss"));
+            }
         }
 //    }
 //    if (dataList.size() + 1 > 6000) {
@@ -255,8 +249,9 @@ public class CustomerInfoService {
 //        data[0][6] = "操作日期";
 //        data[1][1] = "数据总数大于10000行无法导出，请缩小查询范围！";
 //    }
-
-        String report_name = "客户电话资料";
+        Excel2007Util excel2007Util = new Excel2007Util();
+        excel2007Util.writeExcel(data, templatePath, "客户电话资料", response, 1, 300);
+      /*  String report_name = "客户电话资料";
         String titleName = "客户电话资料";
         HSSFWorkbook wb;
         wb = ExcelUtil.createExcelWithTitle(data, titleName);
@@ -279,7 +274,7 @@ public class CustomerInfoService {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
     }
 
 }

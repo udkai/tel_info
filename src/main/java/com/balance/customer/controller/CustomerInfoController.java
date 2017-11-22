@@ -41,8 +41,6 @@ public class CustomerInfoController extends BaseController {
     private PubConfig pubConfig;
 
     /**
-     *
-     *
      * @return 页面
      */
     @RequestMapping("/index")
@@ -55,8 +53,8 @@ public class CustomerInfoController extends BaseController {
         String url = createUrl(customerInfoSearchVO, pageIndex, pageSize);
         PageNavigate pageNavigate = new PageNavigate(url, pageIndex, pageSize, count);//
         List<CustomerInfo> customerInfoList = customerInfoService.search(customerInfoSearchVO, pageIndex, pageSize);
-        List<User>userList=customerInfoService.findUserList();
-        mv.addObject("userList",userList);
+        List<User> userList = customerInfoService.findUserList();
+        mv.addObject("userList", userList);
         mv.addObject("customerInfoList", customerInfoList);
         mv.addObject("pageNavigate", pageNavigate);
         mv.addObject("backUrl", StringUtil.encodeUrl(url));
@@ -85,11 +83,11 @@ public class CustomerInfoController extends BaseController {
         if (StringUtil.isNotNullOrEmpty(customerInfoSearchVO.getCustomer_id_end())) {
             url += " &customer_id_end=" + customerInfoSearchVO.getCustomer_id_end();
         }
-        if(StringUtil.isNotNullOrEmpty(customerInfoSearchVO.getResources())){
-            url+="&resources="+customerInfoSearchVO.getResources();
+        if (StringUtil.isNotNullOrEmpty(customerInfoSearchVO.getResources())) {
+            url += "&resources=" + customerInfoSearchVO.getResources();
         }
-        if(customerInfoSearchVO.getCustomer_status()!=null){
-            url+="&customer_status="+customerInfoSearchVO.getCustomer_status();
+        if (customerInfoSearchVO.getCustomer_status() != null) {
+            url += "&customer_status=" + customerInfoSearchVO.getCustomer_status();
         }
         return url;
     }
@@ -123,7 +121,7 @@ public class CustomerInfoController extends BaseController {
             // 保存
             try {
                 excel_file.transferTo(targetFile);
-                String result = customerInfoService.saveImport(uploadPath + storePath + File.separator + createFilename,resources, create_person);
+                String result = customerInfoService.saveImport(uploadPath + storePath + File.separator + createFilename, resources, create_person);
                 if (result.equals("")) {
                     json = "{success:" + true + ",msgText:'" + "导入成功" + "'}";
                 } else {
@@ -143,11 +141,14 @@ public class CustomerInfoController extends BaseController {
      */
     @RequestMapping("/export")
     public void export(HttpServletRequest request, HttpServletResponse response, CustomerInfoSearchVO customerInfoSearchVO) {
-        customerInfoService.export(customerInfoSearchVO, response);
+        String templatePath = request.getRealPath("/template") + File.separator + "template.xls";
+
+        customerInfoService.export(customerInfoSearchVO,templatePath, response);
     }
+
     @RequestMapping("/delete")
-    public String delete(String customer_id_start,String customer_id_end) {
-        int flag = customerInfoService.delete(customer_id_start,customer_id_end);
+    public String delete(String customer_id_start, String customer_id_end) {
+        int flag = customerInfoService.delete(customer_id_start, customer_id_end);
         if (flag == 0)
             return "forward:/error.htm?msg=" + StringUtil.encodeUrl("客户信息删除失败");
         else
@@ -156,13 +157,14 @@ public class CustomerInfoController extends BaseController {
 
     /**
      * 客户归档
+     *
      * @param customer_id
      * @return
      */
     @RequestMapping("/archive")
-    public String archive(String customer_id){
-        customer_id=customer_id.substring(0,customer_id.length()-1);
-        int flag=customerInfoService.update(customer_id);
+    public String archive(String customer_id) {
+        customer_id = customer_id.substring(0, customer_id.length() - 1);
+        int flag = customerInfoService.update(customer_id);
         if (flag == 0)
             return "forward:/error.htm?msg=" + StringUtil.encodeUrl("客户信息归档失败");
         else
