@@ -131,8 +131,8 @@ public class CustomerInfoDao {
 	 */
 	public void batchAdd(CustomerInfo customerInfo) {
 		NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
-		String sql = "INSERT INTO t_customer_info(id,name,mobile, remark,remark_status,user_name,user_id,resources,status,create_by, create_at,last_modify_by,last_modify_at)  "
-				+ " VALUES(:id,:name,:mobile, :remark,:remark_status,:user_name,:user_id,:resources,:status,:create_by, now(),:last_modify_by,:last_modify_at) ";
+		String sql = "INSERT INTO t_customer_info(id,name,mobile, remark,remark_status,user_name,user_id,resources,status,customer_status,create_by, create_at,last_modify_by,last_modify_at)  "
+				+ " VALUES(:id,:name,:mobile, :remark,:remark_status,:user_name,:user_id,:resources,:status,0,:create_by, now(),:last_modify_by,:last_modify_at) ";
 		SqlParameterSource[] params = SqlParameterSourceUtils.createBatch(new Object[]{customerInfo});
 		int[]num= namedParameterJdbcTemplate.batchUpdate(sql, params);
 	}

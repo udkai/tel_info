@@ -87,14 +87,14 @@
                                                         <div class="col-xs-12 col-sm-5">
 																	<span class="block input-icon input-icon-right">
 																		<select id="customer_status" name="customer_status" class="width-100">
-                                                                            <option value="1" <c:if test="${customerInfo.customer_status==0}">selected</c:if>>为空</option>
+                                                                            <option value="0" <c:if test="${customerInfo.customer_status==0}">selected</c:if>>为空</option>
                                                                             <option value="1" <c:if test="${customerInfo.customer_status==1}">selected</c:if>>空号</option>
                                                                             <option value="2" <c:if test="${customerInfo.customer_status==2}">selected</c:if>>拒接</option>
                                                                             <option value="3" <c:if test="${customerInfo.customer_status==3}">selected</c:if>>无人接听</option>
                                                                             <option value="4" <c:if test="${customerInfo.customer_status==4}">selected</c:if>>尝试加微信</option>
-                                                                            <option value="4" <c:if test="${customerInfo.customer_status==5}">selected</c:if>>加微信通过</option>
-                                                                            <option value="5" <c:if test="${customerInfo.customer_status==6}">selected</c:if>>已经邀约</option>
-                                                                            <option value="6" <c:if test="${customerInfo.customer_status==7}">selected</c:if>>不需要</option>
+                                                                            <option value="5" <c:if test="${customerInfo.customer_status==5}">selected</c:if>>加微信通过</option>
+                                                                            <option value="6" <c:if test="${customerInfo.customer_status==6}">selected</c:if>>已经邀约</option>
+                                                                            <option value="7" <c:if test="${customerInfo.customer_status==7}">selected</c:if>>不需要</option>
                                                                         </select>
 																	</span>
                                                         </div>

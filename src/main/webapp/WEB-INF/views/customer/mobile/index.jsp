@@ -192,7 +192,7 @@
                                 $("#btn_mobile").html(mobile_a);
                                 $("#id").val(data.id);
                                 $("#remark").val("");
-                                $("#customer_status").val("");
+                                $("#customer_status").val("0");
                             } else {
                                 bootbox.alert("还没有分配新客户");
                             }
