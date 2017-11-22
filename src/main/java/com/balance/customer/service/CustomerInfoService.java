@@ -264,7 +264,7 @@ public class CustomerInfoService {
         try {
             response.setContentType("application/msexcel");
             response.reset();
-            response.setHeader("content-disposition", "attachment; filename=" + new String(report_name.getBytes("gb2312"), "ISO-8859-1") + ".xls");
+            response.setHeader("content-disposition", "attachment; filename=" + new String(report_name.getBytes("gb2312"), "ISO-8859-1") + ".xlsx");
             System.setProperty("org.apache.poi.util.POILogger", "org.apache.poi.util.POILogger");
             os = response.getOutputStream();
             wb.write(os);
