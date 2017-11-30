@@ -10,6 +10,27 @@ public class CustomerAllotSearchVO {
     private Integer status;
     private Integer user_id;
     private String user_name;
+    private Integer customer_status;
+
+    @Override
+    public String toString() {
+        return "CustomerAllotSearchVO{" +
+                "customer_id_start='" + customer_id_start + '\'' +
+                ", customer_id_end='" + customer_id_end + '\'' +
+                ", status=" + status +
+                ", user_id=" + user_id +
+                ", user_name='" + user_name + '\'' +
+                ", customer_status=" + customer_status +
+                '}';
+    }
+
+    public Integer getCustomer_status() {
+        return customer_status;
+    }
+
+    public void setCustomer_status(Integer customer_status) {
+        this.customer_status = customer_status;
+    }
 
     public String getUser_name() {
         return user_name;
@@ -51,14 +72,4 @@ public class CustomerAllotSearchVO {
         this.customer_id_end = customer_id_end;
     }
 
-    @Override
-    public String toString() {
-        return "CustomerAllotSearchVO{" +
-                "customer_id_start='" + customer_id_start + '\'' +
-                ", customer_id_end='" + customer_id_end + '\'' +
-                ", status=" + status +
-                ", user_id=" + user_id +
-                ", user_name='" + user_name + '\'' +
-                '}';
-    }
 }

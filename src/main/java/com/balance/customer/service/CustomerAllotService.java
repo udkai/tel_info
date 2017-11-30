@@ -1,18 +1,12 @@
 package com.balance.customer.service;
 
-import com.balance.common.dao.CommonDao;
 import com.balance.customer.VO.CustomerAllotSearchVO;
-import com.balance.customer.VO.CustomerInfoSearchVO;
 import com.balance.customer.dao.CustomerAllotDao;
-import com.balance.customer.dao.CustomerInfoDao;
 import com.balance.customer.model.CustomerInfo;
 import com.balance.customer.model.User;
-import com.balance.util.excel.Excel2007Util;
-import com.balance.util.string.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,8 +46,8 @@ public class CustomerAllotService {
         return 1;
     }
 
-    public int saveCancel(String customer_id_start, String customer_id_end,String realname){
-        customerAllotDao.saveCancel(customer_id_start,customer_id_end,realname);
+    public int saveCancel(String customer_id_start, String customer_id_end,Integer user_id,String realname){
+        customerAllotDao.saveCancel(customer_id_start,customer_id_end,user_id,realname);
         return 1;
     }
 

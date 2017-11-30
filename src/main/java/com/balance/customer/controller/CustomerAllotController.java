@@ -70,6 +70,9 @@ public class CustomerAllotController {
         if(customerAllotSearchVO.getStatus()!=null){
             url+=" &status="+customerAllotSearchVO.getStatus();
         }
+        if(customerAllotSearchVO.getCustomer_status()!=null){
+            url+=" &customer_status="+customerAllotSearchVO.getCustomer_status();
+        }
         if(customerAllotSearchVO.getUser_id()!=null){
             url+="&user_id="+customerAllotSearchVO.getUser_id();
         }
@@ -85,9 +88,9 @@ public class CustomerAllotController {
      * @return
      */
     @RequestMapping("/saveCancel")
-    public String saveCancel(HttpServletRequest request, String customer_id_start, String customer_id_end, HttpServletResponse response) {
+    public String saveCancel(HttpServletRequest request, String customer_id_start, String customer_id_end,Integer user_id, HttpServletResponse response) {
 
-        int flag = customerAllotService.saveCancel(customer_id_start, customer_id_end,SessionUtil.getUserSession(request).getRealname());
+        int flag = customerAllotService.saveCancel(customer_id_start, customer_id_end,user_id, SessionUtil.getUserSession(request).getRealname());
         if (flag == 0)
             return "forward:/error.htm?msg=" + StringUtil.encodeUrl("操作失败！");
         else

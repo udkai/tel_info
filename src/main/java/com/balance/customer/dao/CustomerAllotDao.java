@@ -64,6 +64,9 @@ public class CustomerAllotDao {
         if (customerAllotSearchVO.getStatus() != null) {
             sql += " and status =:status";
         }
+        if (customerAllotSearchVO.getCustomer_status() != null) {
+            sql += " and customer_status =:customer_status";
+        }
         if(customerAllotSearchVO.getUser_id()!=null){
            sql+=" and user_id=:user_id";
         }
@@ -94,9 +97,30 @@ public class CustomerAllotDao {
      * @param realname
      * @return
      */
-    public int saveCancel(String customer_id_start, String customer_id_end, String realname) {
-        String sql = "UPDATE t_customer_info SET user_name='', user_id=null ,status=0,last_modify_by=? WHERE archive_status=0 and  id  >=? and id<=?";
-        return jdbcTemplate.update(sql, realname,customer_id_start,customer_id_end);
+    public int saveCancel(String customer_id_start, String customer_id_end,Integer user_id, String realname) {
+        String sql = "UPDATE t_customer_info SET user_name='', user_id=null ,status=0,last_modify_by=? WHERE archive_status=0 ";
+        sql+=createCancelSql(customer_id_start,customer_id_end,user_id);
+        return jdbcTemplate.update(sql, realname);
     }
 
+    /**
+     * 取消分配sql
+     * @param customer_id_start
+     * @param customer_id_end
+     * @param user_id
+     * @return
+     */
+    public String createCancelSql(String customer_id_start, String customer_id_end,Integer user_id){
+        String sql="";
+        if(StringUtil.isNotNullOrEmpty(customer_id_start)){
+            sql+=" and id>="+customer_id_start;
+        }
+        if(StringUtil.isNotNullOrEmpty(customer_id_end)){
+            sql+=" and id<="+customer_id_end;
+        }
+        if(user_id!=null){
+            sql+=" and user_id="+user_id;
+        }
+        return sql;
+    }
 }

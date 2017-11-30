@@ -71,6 +71,44 @@
                                                     </option>
                                                 </select>
                                             </td>
+                                            <td>客户状态：</td>
+                                            <td>
+                                                <select id="customer_status" name="customer_status" class="width-100">
+                                                    <option value=" "> 全部</option>
+                                                    <option value="0"
+                                                            <c:if test="${customerAllotSearchVO.customer_status==0}">selected</c:if>>
+                                                        为空
+                                                    </option>
+                                                    <option value="1"
+                                                            <c:if test="${customerAllotSearchVO.customer_status==1}">selected</c:if>>
+                                                        空号
+                                                    </option>
+                                                    <option value="2"
+                                                            <c:if test="${customerAllotSearchVO.customer_status==2}">selected</c:if>>
+                                                        拒接
+                                                    </option>
+                                                    <option value="3"
+                                                            <c:if test="${customerAllotSearchVO.customer_status==3}">selected</c:if>>
+                                                        无人接听
+                                                    </option>
+                                                    <option value="4"
+                                                            <c:if test="${customerAllotSearchVO.customer_status==4}">selected</c:if>>
+                                                        尝试加微信
+                                                    </option>
+                                                    <option value="5"
+                                                            <c:if test="${customerAllotSearchVO.customer_status==5}">selected</c:if>>
+                                                        加微信通过
+                                                    </option>
+                                                    <option value="6"
+                                                            <c:if test="${customerAllotSearchVO.customer_status==6}">selected</c:if>>
+                                                        已经邀约
+                                                    </option>
+                                                    <option value="7"
+                                                            <c:if test="${customerAllotSearchVO.customer_status==7}">selected</c:if>>
+                                                        不需要
+                                                    </option>
+                                                </select>
+                                            </td>
                                             <td>业务员：</td>
                                             <td>
                                                 <select id="user_id_search">
@@ -92,25 +130,29 @@
                                                      </button>
                                                  </c:if>--%>
                                             </td>
+                                        </tr>
+                                        <tr>
                                             <td>分配给：</td>
                                             <td id="choose">
-                                                <select id="user_id">
+                                                <select id="user_id" class="width-100">
                                                     <option>请选择</option>
                                                     <c:forEach items="${userList}" var="list">
                                                         <option value=" ${list.id}">${list.realname}</option>
                                                     </c:forEach>
                                                 </select>
                                             </td>
-                                            <td>
+
+                                            <td colspan="2" style="padding-left: 50px">
                                                 <button class="btn btn-primary btn-sm" id="btnAllot">
-                                                    <i class="ace-icon fa fa-search"></i> 分发
+                                                    <i class="glyphicon glyphicon-import"></i> 分发
                                                 </button>
                                             </td>
-                                            <td>
+                                            <td colspan="2" style="padding-left: 50px">
                                                 <button class="btn btn-primary btn-sm" id="btnCancel">
-                                                    <i class="ace-icon fa fa-search"></i> 取消分发
+                                                    <i class="glyphicon glyphicon-export"></i> 取消分发
                                                 </button>
                                             </td>
+                                            <td colspan="6"></td>
                                         </tr>
                                     </table>
                                 </div>
@@ -132,11 +174,12 @@
                                 <%--</th>--%>
                                 <th width=60>序号</th>
                                 <th width=60>客户编号</th>
-                                <th width=80>姓名</th>
+                                <th width=100>姓名</th>
                                 <th width=180>电话号码</th>
                                 <th width=180>备注</th>
-                                <th width=180>所属业务员编号</th>
-                                <th width=180>所属业务员姓名</th>
+                                <th width=110>业务员编号</th>
+                                <th width=110>业务员姓名</th>
+                                <th width=140>客户状态</th>
                                 <th width=100>归档状态</th>
                                 <th width=100>分发状态</th>
                                 <th width="241">操作时间</th>
@@ -158,6 +201,16 @@
                                     <td>${customer.remark}</td>
                                     <td>${customer.user_id}</td>
                                     <td>${customer.user_name}</td>
+                                    <td>
+                                        <c:if test="${customer.customer_status==0}">为空</c:if>
+                                        <c:if test="${customer.customer_status==1}">空号</c:if>
+                                        <c:if test="${customer.customer_status==2}">拒接</c:if>
+                                        <c:if test="${customer.customer_status==3}">无人接听</c:if>
+                                        <c:if test="${customer.customer_status==4}">尝试加微信</c:if>
+                                        <c:if test="${customer.customer_status==5}">加微信通过</c:if>
+                                        <c:if test="${customer.customer_status==6}">已经邀约</c:if>
+                                        <c:if test="${customer.customer_status==7}">不需要</c:if>
+                                    </td>
                                     <td><c:if test="${customer.archive_status==0}">未归档</c:if>
                                         <c:if test="${customer.archive_status==1}">已归档</c:if>
                                     </td>
@@ -212,8 +265,9 @@
                 var user_id = $("#user_id").val();
                 var customer_id_start = $("#customer_id_start").val().trim();
                 var customer_id_end = $("#customer_id_end").val().trim();
-                if (customer_id_start == "" || customer_id_end == "") {
-                    bootbox.alert("请填写客户编号段");
+                var user_id=$("#user_id_search").val();
+                if ((customer_id_start == "" || customer_id_end == "")&&user_id=="") {
+                    bootbox.alert("请填写客户编号段或选择业务员");
                     return;
                 }
 
@@ -222,7 +276,7 @@
                     return;
                 }
                 var backUrl = "${dynamicServer}/customer/allot/index.htm";
-                var url2 = "${dynamicServer}/customer/allot/saveCancel.htm?backUrl=" + backUrl + "&customer_id_start=" + customer_id_start + "&customer_id_end=" + customer_id_end;
+                var url2 = "${dynamicServer}/customer/allot/saveCancel.htm?backUrl=" + backUrl + "&customer_id_start=" + customer_id_start + "&customer_id_end=" + customer_id_end+"&user_id="+user_id;
                 bootbox.confirm("您确定要取消分发吗？", function (result) {
                     if (result) {
                         window.location = encodeURI(url2);
@@ -267,6 +321,9 @@
                     url += "&status=" + $("#status").val();
                 if ($("#user_id_search").val() != '') {
                     url += "&user_id=" + $("#user_id_search").val();
+                }
+                if ($("#customer_status").val() != '') {
+                    url += "&customer_status=" + $("#customer_status").val();
                 }
                 window.location = encodeURI(url);
             }
