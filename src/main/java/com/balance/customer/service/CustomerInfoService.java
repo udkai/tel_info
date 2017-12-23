@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Created by dsy on 2017/4/17.
@@ -24,6 +25,10 @@ import java.util.List;
  */
 @Service
 public class CustomerInfoService {
+    /**
+     * 正则表达式：验证手机号
+     */
+    public static final String REGEX_MOBILE = "^((17[0-9])|(14[0-9])|(13[0-9])|(15[^4,\\D])|(18[0,5-9]))\\d{8}$";
     @Autowired
     private CustomerInfoDao customerInfoDao;
     @Autowired
@@ -109,9 +114,9 @@ public class CustomerInfoService {
         // 1读取excel数据
         List<String[]> list = new Excel2007Util().readExcelContent(file_path, 2);
         // 2校验数据
-//        String checkResult = checkData(list);
-//        if (checkResult.length() != 0)
-//            return checkResult;
+        String checkResult = checkData(list);
+        if (checkResult.length() != 0)
+            return checkResult;
         // 3导入数据
         List<CustomerInfo> listTrans = transData(list);
         for (CustomerInfo customerInfo : listTrans) {
@@ -144,8 +149,8 @@ public class CustomerInfoService {
 //            hashClass.put(vo.getContent(), vo.getValue());
 //        }
         //校验文件内电话是否重复
-        StringBuffer sb = new StringBuffer();
-        String[] tels = new String[list.size()];
+       StringBuffer sb = new StringBuffer();
+       /*  String[] tels = new String[list.size()];
         int j = 0;
         for (String[] str : list) {
             tels[j] = str[1].trim();
@@ -160,11 +165,11 @@ public class CustomerInfoService {
                 }
             }
 
-        }
+        }*/
         //校验数据库是否重复
-        if (sb.length() != 0) {
-            return sb.toString();
-        }
+//        if (sb.length() != 0) {
+//            return sb.toString();
+//        }
         int i = 2;
         for (String[] str : list) {
 
@@ -174,19 +179,27 @@ public class CustomerInfoService {
             if (StringUtil.isNullOrEmpty(str[0])) {
                 sb.append("第" + i + "行姓名为空" + "<br/>");
             }
-            if (StringUtil.isNullOrEmpty(str[1])) {
-                sb.append("第" + i + "行电话号码为空" + "<br/>");
+            if (!isMobile(str[1])) {
+                sb.append("第" + i + "行电话号码格式不正确" + "<br/>");
             }
-            CustomerInfo customerInfo = customerInfoDao.getByMobile(str[1]);
-            if (customerInfo != null) {
-                sb.append("第" + i + "行电话号码已存在-" + str[1] + "<br/>");
-            }
-
+//            CustomerInfo customerInfo = customerInfoDao.getByMobile(str[1]);
+//            if (customerInfo != null) {
+//                sb.append("第" + i + "行电话号码已存在-" + str[1] + "<br/>");
+//            }
             i++;
         }
         return sb.toString();
     }
 
+    /**
+     * 校验手机号
+     *
+     * @param mobile
+     * @return 校验通过返回true，否则返回false
+     */
+    public static boolean isMobile(String mobile) {
+        return Pattern.matches(REGEX_MOBILE, mobile);
+    }
     /**
      * 转换数据
      *

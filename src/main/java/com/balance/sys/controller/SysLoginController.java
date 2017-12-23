@@ -80,7 +80,7 @@ public class SysLoginController {
                 userSession.setCover_url(sysUser.getCover_url());
                 userSession.setDateRangeStr(sysUserService.getDateRange(sysUser.getId(), sysUser.getType()));
                 request.getSession().setAttribute("userSession", userSession);
-                request.getSession().setMaxInactiveInterval(60*30);// 设置过期时间30分钟 单位是秒
+                request.getSession().setMaxInactiveInterval(30*60);// 设置过期时间30分钟 单位是秒
                 // 插入登录日志
                 SysUserLogin sysUserLogin = new SysUserLogin();
                 sysUserLogin.setUser_id(sysUser.getId());
