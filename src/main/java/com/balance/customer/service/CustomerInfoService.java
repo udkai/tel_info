@@ -179,8 +179,8 @@ public class CustomerInfoService {
             if (StringUtil.isNullOrEmpty(str[0])) {
                 sb.append("第" + i + "行姓名为空" + "<br/>");
             }
-            if (!isMobile(str[1])) {
-                sb.append("第" + i + "行电话号码格式不正确" + "<br/>");
+            if (str[1].length()>30) {
+                sb.append("第" + i + "行电话号码长度过长" + "<br/>");
             }
 //            CustomerInfo customerInfo = customerInfoDao.getByMobile(str[1]);
 //            if (customerInfo != null) {
