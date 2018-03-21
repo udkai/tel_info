@@ -1,11 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8" %>
-<%@ include file="../../common/taglib.jsp" %>
+<%@ include file="../common/taglib.jsp" %>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <title>电话管理系统</title>
-    <%@ include file="../../common/header.jsp" %>
+    <%@ include file="../common/header.jsp" %>
     <style>
         .overlay-text {
             text-align: center;
@@ -15,9 +15,9 @@
 </head>
 
 <body class="no-skin">
-<%@ include file="../../common/top.jsp" %>
+<%@ include file="../common/top.jsp" %>
 <div class="main-container" id="main-container">
-    <%@ include file="../../common/menu.jsp" %>
+    <%@ include file="../common/menu.jsp" %>
     <div class="main-content">
         <div class="main-content-inner">
             <!-- #section:basics/content.breadcrumbs -->
@@ -25,138 +25,13 @@
                 <ul class="breadcrumb">
                     <li><i class="ace-icon fa fa-home home-icon"></i> <a href="#">首页</a></li>
                     <li class="active">客户信息管理</li>
-                    <li class="active">客户信息查询</li>
+                    <li class="active">来源管理</li>
                 </ul>
                 <!-- /.breadcrumb -->
             </div>
 
             <!-- /section:basics/content.breadcrumbs -->
             <div class="page-content">
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="widget-box widget-color-blue">
-                            <!-- #section:custom/widget-box.options -->
-                            <div class="widget-header">
-                                <h5 class="widget-title bigger lighter">
-                                    <i class="ace-icon fa fa-table"></i> 操作面板
-                                </h5>
-                            </div>
-
-                            <!-- /section:custom/widget-box.options -->
-                            <div class="widget-body">
-                                <div class="widget-main">
-                                    <table class="searchField" style="margin: 4px; padding: 4px;">
-                                        <tr>
-                                            <td>姓名：</td>
-                                            <td><input type="text" id="txtName" maxlength="15"
-                                                       class="form-control input-small"
-                                                       placeholder=""
-                                                       value="${customerInfoSearchVO.name }"></td>
-                                            <td>手机号：</td>
-                                            <td><input type="text" id="mobile" maxlength="13"
-                                                       class="form-control input-small"
-                                                       style="width:100px;"
-                                                       placeholder=""
-                                                       value="${customerInfoSearchVO.mobile }"></td>
-                                            <td>分配状态：</td>
-                                            <td>
-                                                <select id="status" value="${customerInfoSearchVO.status}"
-                                                        class="width-100">
-                                                    <option value=" ">全部</option>
-                                                    <option value="1"
-                                                            <c:if test="${customerInfoSearchVO.status==1}">selected</c:if>>
-                                                        已分配
-                                                    </option>
-                                                    <option value="0"
-                                                            <c:if test="${customerInfoSearchVO.status==0}">selected</c:if>>
-                                                        未分配
-                                                    </option>
-                                                </select>
-                                            </td>
-                                            <td>业务员：</td>
-                                            <td>
-                                                <select id="user_id" name="user_id" class="width-100">
-                                                    <option value="">请选择</option>
-                                                    <c:forEach items="${userList}" var="user">
-                                                        <option value="${user.id}"
-                                                                <c:if test="${user.id==customerInfoSearchVO.user_id}">selected</c:if>>${user.realname}</option>
-                                                    </c:forEach>
-                                                </select>
-                                            </td>
-
-
-                                            <td>
-
-                                                <button class="btn btn-primary btn-sm" id="btnExport">
-                                                    <i class="ace-icon fa fa-file-excel-o"></i> 导出
-                                                </button>
-                                            </td>
-                                            <td>
-                                                <a href="#student-modal" class="btn btn-primary btn-sm"
-                                                   data-backdrop="static"
-                                                   data-toggle="modal">
-                                                    <i class="ace-icon fa fa-file-excel-o"></i>导入</a>
-
-                                            </td>
-                                            <td>
-
-                                                <button class="btn btn-primary btn-sm" id="btnArchive">
-                                                    <i class="ace-icon fa fa-file-excel-o"></i> 客户归档
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>客户编号：</td>
-                                            <td><input type="text" id="customer_id_start"
-                                                       class="form-control input-small"
-                                                       placeholder="" maxlength="8"
-                                                       value="${customerInfoSearchVO.customer_id_start }"></td>
-                                            <td> &nbsp&nbsp&nbsp&nbsp;至</td>
-                                            <td><input type="text" id="customer_id_end" class="form-control input-small"
-                                                       style="width:100px;"
-                                                       placeholder="" maxlength="8"
-                                                       value="${customerInfoSearchVO.customer_id_end }"></td>
-                                            <td>名单来源：</td>
-                                            <td><input type="text" id="resources_search"
-                                                       class="form-control input-small"
-                                                       placeholder="" maxlength="8"
-                                                       value="${customerInfoSearchVO.resources }"></td>
-                                            <td>客户状态：</td>
-                                            <td>
-                                                <select id="customer_status" name="customer_status" class="width-100">
-                                                    <option value=" "> 全部</option>
-                                                    <option value="0" <c:if test="${customerInfoSearchVO.customer_status==0}">selected</c:if>>为空</option>
-                                                    <option value="1" <c:if test="${customerInfoSearchVO.customer_status==1}">selected</c:if>>空号</option>
-                                                    <option value="2" <c:if test="${customerInfoSearchVO.customer_status==2}">selected</c:if>>拒接</option>
-                                                    <option value="3" <c:if test="${customerInfoSearchVO.customer_status==3}">selected</c:if>>无人接听</option>
-                                                    <option value="4" <c:if test="${customerInfoSearchVO.customer_status==4}">selected</c:if>>尝试加微信</option>
-                                                    <option value="5" <c:if test="${customerInfoSearchVO.customer_status==5}">selected</c:if>>加微信通过</option>
-                                                    <option value="6" <c:if test="${customerInfoSearchVO.customer_status==6}">selected</c:if>>已经邀约</option>
-                                                    <option value="7" <c:if test="${customerInfoSearchVO.customer_status==7}">selected</c:if>>不需要</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-primary btn-sm" id="btnSearch">
-                                                    <i class="ace-icon fa fa-search"></i> 查询
-                                                </button>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-primary btn-sm" id="btnDel">
-                                                    <i class="glyphicon glyphicon-trash"></i> 删除
-                                                </button>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-primary btn-sm" id="btnUserStatistics">
-                                                    <i class="glyphicon glyphicon-trash"></i> 业务员统计显示
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- PAGE CONTENT BEGINS -->
                 <div class="row">
@@ -164,141 +39,86 @@
                         <table id="treeTable" class="table table-striped table-bordered table-hover">
                             <thead>
                             <tr>
-                                <th width=60>
-                                    <label> <input name="module" class="ace father" type="checkbox" id="all_select"/>
-                                        <span class="lbl"></span>
-                                    </label>
-                                </th>
                                 <th width=60>序号</th>
-                                <th width=60>客户编号</th>
-                                <th width=80>姓名</th>
-                                <th width=100>电话号码</th>
-                                <th width=180>备注</th>
-                                <th width=140>客户状态</th>
-                                <th width=100>归档状态</th>
-                                <th width=180>名单来源</th>
-                                <th width=160>所属业务员编号</th>
-                                <th width=160>所属业务员姓名</th>
-                                <th width="241">操作时间</th>
+                                <th width=60>名单来源</th>
+                                <th width=80>导入日期</th>
+                                <th width=100>总条数</th>
+                                <th width=180>操作</th>
                             </tr>
                             </thead>
                             <tbody id="tbody">
-                            <c:forEach items="${customerInfoList }" var="customer" varStatus="st">
-                                <tr>
-                                    <td>
-                                        <label>
-                                            <input name="module" class="ace father" type="checkbox"/>
-                                            <span class="lbl"></span>
-                                        </label>
-                                    </td>
-                                    <td width=40>${st.index+1}</td>
-                                    <td>${customer.id}</td>
-                                    <td>${customer.name}</td>
-                                    <td>${customer.mobile}</td>
-                                    <td>${customer.remark}</td>
-                                    <td>
-                                        <c:if test="${customer.customer_status==0}">为空</c:if>
-                                        <c:if test="${customer.customer_status==1}">空号</c:if>
-                                        <c:if test="${customer.customer_status==2}">拒接</c:if>
-                                        <c:if test="${customer.customer_status==3}">无人接听</c:if>
-                                        <c:if test="${customer.customer_status==4}">尝试加微信</c:if>
-                                        <c:if test="${customer.customer_status==5}">加微信通过</c:if>
-                                        <c:if test="${customer.customer_status==6}">已经邀约</c:if>
-                                        <c:if test="${customer.customer_status==7}">不需要</c:if>
-                                    </td>
-                                    <td>
-                                        <c:if test="${customer.archive_status==0}">未归档</c:if>
-                                        <c:if test="${customer.archive_status==1}">已归档</c:if>
-                                    </td>
-                                    <td>${customer.resources}</td>
-                                    <td>${customer.user_id}</td>
-                                    <td>${customer.user_name}</td>
-                                    <td><fmt:formatDate value="${customer.last_modify_at}"
-                                                        pattern="yyyy-MM-dd HH:mm:ss"/></td>
-                                </tr>
-                            </c:forEach>
+                            <tr>
+                                <td>1</td>
+                                <td>名单1</td>
+                                <td>20180102</td>
+                                <td>262</td>
+                                <td>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-primary btn-sm" id="btnCancel">
+                                            <i class="glyphicon glyphicon-trash"></i> 全部解除分配
+                                        </button>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-primary btn-sm" id="btnAllot">
+                                            <i class="glyphicon glyphicon-trash"></i> 分配显示
+                                        </button>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-primary btn-sm" id="btnDel">
+                                            <i class="glyphicon glyphicon-trash"></i> 全部删除
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>名单1</td>
+                                <td>20180102</td>
+                                <td>262</td>
+                                <td>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-primary btn-sm" >
+                                            <i class="glyphicon glyphicon-trash"></i> 全部解除分配
+                                        </button>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-primary btn-sm" >
+                                            <i class="glyphicon glyphicon-trash"></i> 分配显示
+                                        </button>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-primary btn-sm" >
+                                            <i class="glyphicon glyphicon-trash"></i> 全部删除
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>名单1</td>
+                                <td>20180102</td>
+                                <td>262</td>
+                                <td>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-primary btn-sm" >
+                                            <i class="glyphicon glyphicon-trash"></i> 全部解除分配
+                                        </button>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-primary btn-sm" >
+                                            <i class="glyphicon glyphicon-trash"></i> 分配显示
+                                        </button>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-primary btn-sm" >
+                                            <i class="glyphicon glyphicon-trash"></i> 全部删除
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
-
-                    <!-- 业务员统计显示-->
-                    <div class="col-xs-12 hidden" id="userStatistics">
-                        <table  class="table table-striped table-bordered table-hover">
-                            <thead>
-                            <tr>
-                                <th width=10>序号</th>
-                                <th width=60>业务员</th>
-                                <th width=60>分配情况</th>
-                                <th width="241">操作</th>
-                            </tr>
-                            </thead>
-                            <tbody id="tbody1">
-                            <tr>
-                                <td>1</td>
-                                <td>老王</td>
-                                <td>0001001-0001010</td>
-                                <td>
-                                    <div class="col-md-4">
-                                    <button class="btn btn-primary btn-sm" id="btnDel">
-                                        <i class="glyphicon glyphicon-trash"></i> 解除分配
-                                    </button>
-                                    </div>
-                                    <div class="col-md-8">
-                                    <span>转分配给</span>
-                                    <select>
-                                        <option>业务员</option>
-                                        <option>老王</option>
-                                        <option>老李</option>
-                                        <option>老张</option>
-                                    </select>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>老王</td>
-                                <td>0001001-0001010</td>
-                                <td>
-                                    <div class="col-md-4">
-                                        <button class="btn btn-primary btn-sm" id="btnDel">
-                                            <i class="glyphicon glyphicon-trash"></i> 解除分配
-                                        </button>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <span>转分配给</span>
-                                        <select>
-                                            <option>业务员</option>
-                                            <option>老王</option>
-                                            <option>老李</option>
-                                            <option>老张</option>
-                                        </select>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>老王</td>
-                                <td>0001001-0001010</td>
-                                <td>
-                                    <div class="col-md-4">
-                                        <button class="btn btn-primary btn-sm" id="btnDel">
-                                            <i class="glyphicon glyphicon-trash"></i> 解除分配
-                                        </button>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <span>转分配给</span>
-                                        <select>
-                                            <option>业务员</option>
-                                            <option>老王</option>
-                                            <option>老李</option>
-                                            <option>老张</option>
-                                        </select>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            </tbody>
-                        </table>
                     </div>
 
                     <!-- /.span -->
@@ -408,7 +228,7 @@
             <!-- /.modal-dialog -->
         </div>
         <!-- /.main-container -->
-        <%@ include file="../../common/js.jsp" %>
+        <%@ include file="../common/js.jsp" %>
         <script src="<c:url value="/assets/js/jquery.form.js"/>"></script>
 
         <script type="text/javascript">

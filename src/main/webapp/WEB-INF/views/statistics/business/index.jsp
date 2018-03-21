@@ -24,8 +24,8 @@
             <div class="breadcrumbs  breadcrumbs-fixed" id="breadcrumbs">
                 <ul class="breadcrumb">
                     <li><i class="ace-icon fa fa-home home-icon"></i> <a href="#">首页</a></li>
-                    <li class="active">客户信息管理</li>
-                    <li class="active">客户信息查询</li>
+                    <li class="active">统计分析</li>
+                    <li class="active">业务统计</li>
                 </ul>
                 <!-- /.breadcrumb -->
             </div>
@@ -47,32 +47,24 @@
                                 <div class="widget-main">
                                     <table class="searchField" style="margin: 4px; padding: 4px;">
                                         <tr>
-                                            <td>姓名：</td>
+                                            <td>起始时间：</td>
                                             <td><input type="text" id="txtName" maxlength="15"
                                                        class="form-control input-small"
                                                        placeholder=""
-                                                       value="${customerInfoSearchVO.name }"></td>
-                                            <td>手机号：</td>
+                                                       value="${statisticsSearchVO.startTime }"></td>
+                                            <td>结束时间：</td>
                                             <td><input type="text" id="mobile" maxlength="13"
                                                        class="form-control input-small"
                                                        style="width:100px;"
                                                        placeholder=""
-                                                       value="${customerInfoSearchVO.mobile }"></td>
-                                            <td>分配状态：</td>
+                                                       value="${statisticsSearchVO.endTime }"></td>
                                             <td>
-                                                <select id="status" value="${customerInfoSearchVO.status}"
-                                                        class="width-100">
-                                                    <option value=" ">全部</option>
-                                                    <option value="1"
-                                                            <c:if test="${customerInfoSearchVO.status==1}">selected</c:if>>
-                                                        已分配
-                                                    </option>
-                                                    <option value="0"
-                                                            <c:if test="${customerInfoSearchVO.status==0}">selected</c:if>>
-                                                        未分配
-                                                    </option>
-                                                </select>
+                                                <button class="btn btn-primary btn-sm" id="btnSearch">
+                                                    <i class="ace-icon fa fa-search"></i> 生成统计
+                                                </button>
                                             </td>
+                                        </tr>
+                                        <tr>
                                             <td>业务员：</td>
                                             <td>
                                                 <select id="user_id" name="user_id" class="width-100">
@@ -82,74 +74,13 @@
                                                                 <c:if test="${user.id==customerInfoSearchVO.user_id}">selected</c:if>>${user.realname}</option>
                                                     </c:forEach>
                                                 </select>
-                                            </td>
-
-
-                                            <td>
-
-                                                <button class="btn btn-primary btn-sm" id="btnExport">
-                                                    <i class="ace-icon fa fa-file-excel-o"></i> 导出
-                                                </button>
-                                            </td>
-                                            <td>
-                                                <a href="#student-modal" class="btn btn-primary btn-sm"
-                                                   data-backdrop="static"
-                                                   data-toggle="modal">
-                                                    <i class="ace-icon fa fa-file-excel-o"></i>导入</a>
-
-                                            </td>
-                                            <td>
-
-                                                <button class="btn btn-primary btn-sm" id="btnArchive">
-                                                    <i class="ace-icon fa fa-file-excel-o"></i> 客户归档
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>客户编号：</td>
-                                            <td><input type="text" id="customer_id_start"
-                                                       class="form-control input-small"
-                                                       placeholder="" maxlength="8"
-                                                       value="${customerInfoSearchVO.customer_id_start }"></td>
-                                            <td> &nbsp&nbsp&nbsp&nbsp;至</td>
-                                            <td><input type="text" id="customer_id_end" class="form-control input-small"
-                                                       style="width:100px;"
-                                                       placeholder="" maxlength="8"
-                                                       value="${customerInfoSearchVO.customer_id_end }"></td>
-                                            <td>名单来源：</td>
-                                            <td><input type="text" id="resources_search"
-                                                       class="form-control input-small"
-                                                       placeholder="" maxlength="8"
-                                                       value="${customerInfoSearchVO.resources }"></td>
-                                            <td>客户状态：</td>
-                                            <td>
-                                                <select id="customer_status" name="customer_status" class="width-100">
-                                                    <option value=" "> 全部</option>
-                                                    <option value="0" <c:if test="${customerInfoSearchVO.customer_status==0}">selected</c:if>>为空</option>
-                                                    <option value="1" <c:if test="${customerInfoSearchVO.customer_status==1}">selected</c:if>>空号</option>
-                                                    <option value="2" <c:if test="${customerInfoSearchVO.customer_status==2}">selected</c:if>>拒接</option>
-                                                    <option value="3" <c:if test="${customerInfoSearchVO.customer_status==3}">selected</c:if>>无人接听</option>
-                                                    <option value="4" <c:if test="${customerInfoSearchVO.customer_status==4}">selected</c:if>>尝试加微信</option>
-                                                    <option value="5" <c:if test="${customerInfoSearchVO.customer_status==5}">selected</c:if>>加微信通过</option>
-                                                    <option value="6" <c:if test="${customerInfoSearchVO.customer_status==6}">selected</c:if>>已经邀约</option>
-                                                    <option value="7" <c:if test="${customerInfoSearchVO.customer_status==7}">selected</c:if>>不需要</option>
-                                                </select>
-                                            </td>
+                                            </td>                                            <td> </td>
                                             <td>
                                                 <button class="btn btn-primary btn-sm" id="btnSearch">
-                                                    <i class="ace-icon fa fa-search"></i> 查询
+                                                    <i class="ace-icon fa fa-search"></i> 下载报表
                                                 </button>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-primary btn-sm" id="btnDel">
-                                                    <i class="glyphicon glyphicon-trash"></i> 删除
-                                                </button>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-primary btn-sm" id="btnUserStatistics">
-                                                    <i class="glyphicon glyphicon-trash"></i> 业务员统计显示
-                                                </button>
-                                            </td>
+                                            </td>                                            <td>名单来源：</td>
+
                                         </tr>
                                     </table>
                                 </div>
@@ -160,7 +91,7 @@
 
                 <!-- PAGE CONTENT BEGINS -->
                 <div class="row">
-                    <div class="col-xs-12" id="customerInfo">
+                    <div class="col-xs-12">
                         <table id="treeTable" class="table table-striped table-bordered table-hover">
                             <thead>
                             <tr>
@@ -170,16 +101,19 @@
                                     </label>
                                 </th>
                                 <th width=60>序号</th>
-                                <th width=60>客户编号</th>
-                                <th width=80>姓名</th>
-                                <th width=100>电话号码</th>
-                                <th width=180>备注</th>
-                                <th width=140>客户状态</th>
-                                <th width=100>归档状态</th>
-                                <th width=180>名单来源</th>
-                                <th width=160>所属业务员编号</th>
-                                <th width=160>所属业务员姓名</th>
-                                <th width="241">操作时间</th>
+                                <th width=60>业务员</th>
+                                <th width=80>名单总数</th>
+                                <th width=100>尚未分配名单</th>
+                                <th width=180>已经分配名单</th>
+                                <th width=140>已经呼叫客户</th>
+                                <th width=100>剩余名单</th>
+                                <th width=180>空号</th>
+                                <th width=160>拒接</th>
+                                <th width=160>无人接听</th>
+                                <th width="241">尝试家微信</th>
+                                <th width="241">加微信通过</th>
+                                <th width="241">已经邀约</th>
+                                <th width="241">不需要</th>
                             </tr>
                             </thead>
                             <tbody id="tbody">
@@ -220,87 +154,6 @@
                             </tbody>
                         </table>
                     </div>
-
-                    <!-- 业务员统计显示-->
-                    <div class="col-xs-12 hidden" id="userStatistics">
-                        <table  class="table table-striped table-bordered table-hover">
-                            <thead>
-                            <tr>
-                                <th width=10>序号</th>
-                                <th width=60>业务员</th>
-                                <th width=60>分配情况</th>
-                                <th width="241">操作</th>
-                            </tr>
-                            </thead>
-                            <tbody id="tbody1">
-                            <tr>
-                                <td>1</td>
-                                <td>老王</td>
-                                <td>0001001-0001010</td>
-                                <td>
-                                    <div class="col-md-4">
-                                    <button class="btn btn-primary btn-sm" id="btnDel">
-                                        <i class="glyphicon glyphicon-trash"></i> 解除分配
-                                    </button>
-                                    </div>
-                                    <div class="col-md-8">
-                                    <span>转分配给</span>
-                                    <select>
-                                        <option>业务员</option>
-                                        <option>老王</option>
-                                        <option>老李</option>
-                                        <option>老张</option>
-                                    </select>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>老王</td>
-                                <td>0001001-0001010</td>
-                                <td>
-                                    <div class="col-md-4">
-                                        <button class="btn btn-primary btn-sm" id="btnDel">
-                                            <i class="glyphicon glyphicon-trash"></i> 解除分配
-                                        </button>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <span>转分配给</span>
-                                        <select>
-                                            <option>业务员</option>
-                                            <option>老王</option>
-                                            <option>老李</option>
-                                            <option>老张</option>
-                                        </select>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>老王</td>
-                                <td>0001001-0001010</td>
-                                <td>
-                                    <div class="col-md-4">
-                                        <button class="btn btn-primary btn-sm" id="btnDel">
-                                            <i class="glyphicon glyphicon-trash"></i> 解除分配
-                                        </button>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <span>转分配给</span>
-                                        <select>
-                                            <option>业务员</option>
-                                            <option>老王</option>
-                                            <option>老李</option>
-                                            <option>老张</option>
-                                        </select>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            </tbody>
-                        </table>
-                    </div>
-
                     <!-- /.span -->
                 </div>
 
@@ -417,7 +270,6 @@
                 $("#btnSearch").bind('click', searchModule);
                 $("#btnExport").bind('click', exportModule);
                 $("#btnArchive").bind('click', ArchiveModule);
-                $("#btnUserStatistics").bind('click', userStatisticsModule);
                 $("#all_select").change(function () {
                     //全选复选框事件
                     $(":checkbox", $("#treeTable")).prop("checked", $(this).prop("checked"));
@@ -505,12 +357,7 @@
                     $("#btnSearch").click();
                 })
             })
-            //业务员统计显示
-           var userStatisticsModule=function () {
-               var url="";
-               $("#customerInfo").hide();
-               $("#userStatistics").removeClass("hidden");
-           }
+
             // 查询方法
             var searchModule = function () {
                 var url = "index.htm?___=_";

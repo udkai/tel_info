@@ -39,7 +39,6 @@ public class CustomerInfoController extends BaseController {
     private CustomerInfoService customerInfoService;
     @Autowired
     private PubConfig pubConfig;
-
     /**
      * @return 页面
      */
