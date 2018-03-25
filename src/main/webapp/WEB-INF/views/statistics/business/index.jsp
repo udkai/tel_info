@@ -107,6 +107,7 @@
                             </thead>
                             <tbody id="tbody">
                             <c:forEach items="${businessList }" var="business" varStatus="st">
+                                <c:if test="${businessList.size()>1}">
                                 <tr>
                                     <td width=40>${st.index+1}</td>
                                     <td>${business.user_name}</td>
@@ -123,6 +124,7 @@
                                     <td>${business.status6}</td>
                                     <td>${business.status7}</td>
                                 </tr>
+                                </c:if>
                             </c:forEach>
                             </tbody>
                         </table>
@@ -130,9 +132,11 @@
                     <!-- /.span -->
                 </div>
 
-               <%-- <div class="row">
-                    <div class="col-xs-12">${ pageNavigate.pageModel}</div>
-                </div>--%>
+                <c:if test="${businessList.size()>1}">
+                    <div class="row">
+                        <div class="col-xs-12">${ pageNavigate.pageModel}</div>
+                    </div>
+                </c:if>
             </div>
             <!-- /.main-content -->
         </div>

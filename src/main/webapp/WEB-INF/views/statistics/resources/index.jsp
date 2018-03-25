@@ -102,95 +102,97 @@
                             </thead>
                             <tbody id="tbody">
                             <c:forEach items="${resourcesList }" var="resources" varStatus="st">
-                                <tr>
-                                    <td width=40>${st.index+1}</td>
-                                    <td>${resources.resources}</td>
-                                    <td>${resources.total}</td>
-                                    <td>${resources.notAlloted}</td>
-                                    <td>${resources.alloted}</td>
-                                    <td>${resources.called}</td>
-                                    <td>${resources.status0}</td>
-                                    <td>${resources.status1}</td>
-                                    <td>${resources.status2}</td>
-                                    <td>${resources.status3}</td>
-                                    <td>${resources.status4}</td>
-                                    <td>${resources.status5}</td>
-                                    <td>${resources.status6}</td>
-                                    <td>${resources.status7}</td>
-                                </tr>
+                                <c:if test="${resourcesList.size()>1}">
+                                    <tr>
+                                        <td width=40>${st.index+1}</td>
+                                        <td>${resources.resources}</td>
+                                        <td>${resources.total}</td>
+                                        <td>${resources.notAlloted}</td>
+                                        <td>${resources.alloted}</td>
+                                        <td>${resources.called}</td>
+                                        <td>${resources.status0}</td>
+                                        <td>${resources.status1}</td>
+                                        <td>${resources.status2}</td>
+                                        <td>${resources.status3}</td>
+                                        <td>${resources.status4}</td>
+                                        <td>${resources.status5}</td>
+                                        <td>${resources.status6}</td>
+                                        <td>${resources.status7}</td>
+                                    </tr>
+                                </c:if>
                             </c:forEach>
                             </tbody>
                         </table>
                     </div>
                     <!-- /.span -->
                 </div>
-
-                <div class="row">
-                    <div class="col-xs-12">${ pageNavigate.pageModel}</div>
-                </div>
+                <c:if test="${resourcesList.size()>1}">
+                    <div class="row">
+                        <div class="col-xs-12">${ pageNavigate.pageModel}</div>
+                    </div>
+                </c:if>
             </div>
             <!-- /.main-content -->
         </div>
     </div>
-        <!-- /.main-container -->
-        <%@ include file="../../common/js.jsp" %>
-        <script src="<c:url value="/assets/js/jquery.form.js"/>"></script>
-        <script src="<c:url value="/assets/components/bootstrap-datepicker/js/bootstrap-datepicker.js"/>"></script>
-        <script src="<c:url value="/assets/components/bootstrap-datepicker/js/locales/bootstrap-datepicker.zh-CN.js"/>"></script>
+    <!-- /.main-container -->
+    <%@ include file="../../common/js.jsp" %>
+    <script src="<c:url value="/assets/js/jquery.form.js"/>"></script>
+    <script src="<c:url value="/assets/components/bootstrap-datepicker/js/bootstrap-datepicker.js"/>"></script>
+    <script src="<c:url value="/assets/components/bootstrap-datepicker/js/locales/bootstrap-datepicker.zh-CN.js"/>"></script>
 
-        <script type="text/javascript">
-            $(function () {
+    <script type="text/javascript">
+        $(function () {
 
-                $('#txtStartTime').datepicker({
-                    format: "yyyy-mm-dd",
-                    autoclose: true,
-                    todayHighlight: true,
-                    language: "zh-CN",
-                    orientation: "bottom auto"
-                });
-                $('#txtEndTime').datepicker({
-                    format: "yyyy-mm-dd",
-                    autoclose: true,
-                    todayHighlight: true,
-                    language: "zh-CN",
-                    orientation: "bottom auto"
-                });
-                $("#btnSearch").bind('click', searchModule);
-                $("#btnDownload").bind('click', downloadModule);
-            })
+            $('#txtStartTime').datepicker({
+                format: "yyyy-mm-dd",
+                autoclose: true,
+                todayHighlight: true,
+                language: "zh-CN",
+                orientation: "bottom auto"
+            });
+            $('#txtEndTime').datepicker({
+                format: "yyyy-mm-dd",
+                autoclose: true,
+                todayHighlight: true,
+                language: "zh-CN",
+                orientation: "bottom auto"
+            });
+            $("#btnSearch").bind('click', searchModule);
+            $("#btnDownload").bind('click', downloadModule);
+        })
 
 
+        // 查询方法
+        var searchModule = function () {
+            var url = "index.htm?___=_";
 
-            // 查询方法
-            var searchModule = function () {
-                var url = "index.htm?___=_";
-
-                if ($("#txtStartTime").val() != '')
-                    url += "&startTime=" + $("#txtStartTime").val();
-                if($("#txtStartTime").val()!=''){
-                    url+="&endTime="+$("#txtEndTime").val();
-                }
-                if($("#txtResources").val()!=''){
-                    url+="&resources="+$("#txtResources").val();
-                }
-
-                window.location = encodeURI(url);
+            if ($("#txtStartTime").val() != '')
+                url += "&startTime=" + $("#txtStartTime").val();
+            if ($("#txtStartTime").val() != '') {
+                url += "&endTime=" + $("#txtEndTime").val();
             }
-            //下载报表
-            var downloadModule = function () {
-                var url = "export.htm?___=_";
-                if ($("#txtStartTime").val() != '')
-                    url += "&startTime=" + $("#txtStartTime").val();
-                if($("#txtStartTime").val()!=''){
-                    url+="&endTime="+$("#txtEndTime").val();
-                }
-                if($("#txtResources").val()!=''){
-                    url+="&resources="+$("#txtResources").val();
-                }
-                window.location = encodeURI(url);
+            if ($("#txtResources").val() != '') {
+                url += "&resources=" + $("#txtResources").val();
             }
 
+            window.location = encodeURI(url);
+        }
+        //下载报表
+        var downloadModule = function () {
+            var url = "export.htm?___=_";
+            if ($("#txtStartTime").val() != '')
+                url += "&startTime=" + $("#txtStartTime").val();
+            if ($("#txtStartTime").val() != '') {
+                url += "&endTime=" + $("#txtEndTime").val();
+            }
+            if ($("#txtResources").val() != '') {
+                url += "&resources=" + $("#txtResources").val();
+            }
+            window.location = encodeURI(url);
+        }
 
-        </script>
+
+    </script>
 </body>
 </html>

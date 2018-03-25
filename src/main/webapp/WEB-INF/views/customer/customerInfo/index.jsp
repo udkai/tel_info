@@ -47,18 +47,18 @@
                                 <div class="widget-main">
                                     <table class="searchField" style="margin: 4px; padding: 4px;">
                                         <tr>
-                                            <td>姓名：</td>
+                                            <td>姓名</td>
                                             <td><input type="text" id="txtName" maxlength="15"
                                                        class="form-control input-small"
                                                        placeholder=""
                                                        value="${customerInfoSearchVO.name }"></td>
-                                            <td>手机号：</td>
+                                            <td>手机号</td>
                                             <td><input type="text" id="mobile" maxlength="13"
                                                        class="form-control input-small"
                                                        style="width:100px;"
                                                        placeholder=""
                                                        value="${customerInfoSearchVO.mobile }"></td>
-                                            <td>分配状态：</td>
+                                            <td>分配状态</td>
                                             <td>
                                                 <select id="status" value="${customerInfoSearchVO.status}"
                                                         class="width-100">
@@ -73,7 +73,7 @@
                                                     </option>
                                                 </select>
                                             </td>
-                                            <td>业务员：</td>
+                                            <td>业务员</td>
                                             <td>
                                                 <select id="user_id" name="user_id" class="width-100">
                                                     <option value="">请选择</option>
@@ -83,30 +83,34 @@
                                                     </c:forEach>
                                                 </select>
                                             </td>
-
+                                            <td>名单来源</td>
+                                            <td><input type="text" id="resources_search"
+                                                       class="form-control input-small"
+                                                       placeholder="" maxlength="8"
+                                                       value="${customerInfoSearchVO.resources }"></td>
 
                                             <td>
 
                                                 <button class="btn btn-primary btn-sm" id="btnExport">
-                                                    <i class="ace-icon fa fa-file-excel-o"></i> 导出
+                                                     导出
                                                 </button>
                                             </td>
                                             <td>
                                                 <a href="#student-modal" class="btn btn-primary btn-sm"
                                                    data-backdrop="static"
                                                    data-toggle="modal">
-                                                    <i class="ace-icon fa fa-file-excel-o"></i>导入</a>
+                                                   导入</a>
 
                                             </td>
                                             <td>
 
                                                 <button class="btn btn-primary btn-sm" id="btnArchive">
-                                                    <i class="ace-icon fa fa-file-excel-o"></i> 客户归档
+                                                     客户归档
                                                 </button>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td>客户编号：</td>
+                                            <td>客户编号</td>
                                             <td><input type="text" id="customer_id_start"
                                                        class="form-control input-small"
                                                        placeholder="" maxlength="8"
@@ -116,12 +120,8 @@
                                                        style="width:100px;"
                                                        placeholder="" maxlength="8"
                                                        value="${customerInfoSearchVO.customer_id_end }"></td>
-                                            <td>名单来源：</td>
-                                            <td><input type="text" id="resources_search"
-                                                       class="form-control input-small"
-                                                       placeholder="" maxlength="8"
-                                                       value="${customerInfoSearchVO.resources }"></td>
-                                            <td>客户状态：</td>
+
+                                            <td>客户状态</td>
                                             <td>
                                                 <select id="customer_status" name="customer_status" class="width-100">
                                                     <option value=" "> 全部</option>
@@ -135,19 +135,27 @@
                                                     <option value="7" <c:if test="${customerInfoSearchVO.customer_status==7}">selected</c:if>>不需要</option>
                                                 </select>
                                             </td>
+                                            <td>起始时间</td>
+                                            <td><input type="text" id="txtStartTime"
+                                                       class="form-control input-small" placeholder=""
+                                                       value="${customerInfoSearchVO.start_time }"></td>
+                                            <td>结束时间</td>
+                                            <td><input type="text" id="txtEndTime"
+                                                       class="form-control input-small" placeholder=""
+                                                       value="${customerInfoSearchVO.end_time }"></td>
                                             <td>
                                                 <button class="btn btn-primary btn-sm" id="btnSearch">
-                                                    <i class="ace-icon fa fa-search"></i> 查询
+                                                     查询
                                                 </button>
                                             </td>
                                             <td>
                                                 <button class="btn btn-primary btn-sm" id="btnDel">
-                                                    <i class="glyphicon glyphicon-trash"></i> 删除
+                                                    删除
                                                 </button>
                                             </td>
                                             <td>
                                                 <button class="btn btn-primary btn-sm" id="btnUserStatistics">
-                                                    <i class="glyphicon glyphicon-trash"></i> 业务员统计显示
+                                                    业务员统计显示
                                                 </button>
                                             </td>
                                         </tr>
@@ -213,7 +221,7 @@
                                     <td>${customer.resources}</td>
                                     <td>${customer.user_id}</td>
                                     <td>${customer.user_name}</td>
-                                    <td><fmt:formatDate value="${customer.last_modify_at}"
+                                    <td><fmt:formatDate value="${customer.operate_at}"
                                                         pattern="yyyy-MM-dd HH:mm:ss"/></td>
                                 </tr>
                             </c:forEach>
@@ -410,6 +418,8 @@
         <!-- /.main-container -->
         <%@ include file="../../common/js.jsp" %>
         <script src="<c:url value="/assets/js/jquery.form.js"/>"></script>
+        <script src="<c:url value="/assets/components/bootstrap-datepicker/js/bootstrap-datepicker.js"/>"></script>
+        <script src="<c:url value="/assets/components/bootstrap-datepicker/js/locales/bootstrap-datepicker.zh-CN.js"/>"></script>
 
         <script type="text/javascript">
             $(function () {
@@ -421,6 +431,21 @@
                 $("#all_select").change(function () {
                     //全选复选框事件
                     $(":checkbox", $("#treeTable")).prop("checked", $(this).prop("checked"));
+                });
+
+                $('#txtStartTime').datepicker({
+                    format: "yyyy-mm-dd",
+                    autoclose: true,
+                    todayHighlight: true,
+                    language: "zh-CN",
+                    orientation: "bottom auto"
+                });
+                $('#txtEndTime').datepicker({
+                    format: "yyyy-mm-dd",
+                    autoclose: true,
+                    todayHighlight: true,
+                    language: "zh-CN",
+                    orientation: "bottom auto"
                 });
 
                 var $student_import_input = $('#student-import-input');
@@ -537,6 +562,12 @@
                 if ($("#customer_status").val() != '') {
                     url += "&customer_status=" + $("#customer_status").val();
                 }
+                if($("#txtStartTime").val()!=''){
+                    url+="&start_time="+$("#txtStartTime").val();
+                }
+                if($("#txtEndTime").val()!=''){
+                    url+="&end_time="+$("#txtEndTime").val();
+                }
                 window.location = encodeURI(url);
             }
             //导出
@@ -564,6 +595,12 @@
                 }
                 if ($("#customer_status").val() != '') {
                     url += "&customer_status=" + $("#customer_status").val();
+                }
+                if($("#txtStartTime").val()!=''){
+                    url+="&start_time="+$("#txtStartTime").val();
+                }
+                if($("#txtEndTime").val()!=''){
+                    url+="&end_time="+$("#txtEndTime").val();
                 }
                 window.location = encodeURI(url);
             }
