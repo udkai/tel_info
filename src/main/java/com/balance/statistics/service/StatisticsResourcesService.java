@@ -1,13 +1,9 @@
 package com.balance.statistics.service;
 
-import com.balance.customer.VO.CustomerInfoSearchVO;
-import com.balance.customer.model.CustomerInfo;
 import com.balance.customer.model.User;
-import com.balance.customer.util.StatusUtil;
 import com.balance.statistics.VO.StatisticsSearchVO;
-import com.balance.statistics.dao.StatisticsBusinessDao;
+import com.balance.statistics.dao.StatisticsResourcesDao;
 import com.balance.statistics.model.Statistics;
-import com.balance.util.date.DateUtil;
 import com.balance.util.excel.Excel2007Util;
 import com.balance.util.web.WebUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,30 +16,30 @@ import java.util.List;
  * Created by liukai on 2018/3/20.
  */
 @Service
-public class StatisticsBusinessService {
+public class StatisticsResourcesService {
     @Autowired
-private StatisticsBusinessDao statisticsBusinessDao;
+private StatisticsResourcesDao statisticsResourcesDao;
     public List<User> findUserList(){
-        return statisticsBusinessDao.findUserList();
+        return statisticsResourcesDao.findUserList();
     }
     public List listAll(StatisticsSearchVO statisticsSearchVO){
-        return statisticsBusinessDao.listAll(statisticsSearchVO);
+        return statisticsResourcesDao.listAll(statisticsSearchVO);
     }
     public int count(StatisticsSearchVO statisticsSearchVO){
-        return statisticsBusinessDao.count(statisticsSearchVO);
+        return statisticsResourcesDao.count(statisticsSearchVO);
     }
     public int countTotal(StatisticsSearchVO statisticsSearchVO){
-    return statisticsBusinessDao.countTotal(statisticsSearchVO);
+    return statisticsResourcesDao.countTotal(statisticsSearchVO);
     }
     public int countNotAlloted(){
-        return statisticsBusinessDao.countNotAlloted();
+        return statisticsResourcesDao.countNotAlloted();
     }
     public void export(StatisticsSearchVO statisticsSearchVO, String templatePath, HttpServletResponse response) {
-        List<Statistics> dataList = statisticsBusinessDao.listAll(statisticsSearchVO);
+        List<Statistics> dataList = statisticsResourcesDao.listAll(statisticsSearchVO);
         //名单总数
-        int total=statisticsBusinessDao.countTotal(statisticsSearchVO);
+        int total=statisticsResourcesDao.countTotal(statisticsSearchVO);
         //尚未分配名单
-        int notAlloted=statisticsBusinessDao.countNotAlloted();
+        int notAlloted=statisticsResourcesDao.countNotAlloted();
         String[][] data = null;
 
         long sumMoney = 0;
@@ -52,7 +48,7 @@ private StatisticsBusinessDao statisticsBusinessDao;
 
         for (int i = 0; i < dataList.size(); i++) {
             Statistics statistics=dataList.get(i);
-            data[i][0] = WebUtil.getSafeStr(statistics.getUser_name());
+            data[i][0] = WebUtil.getSafeStr(statistics.getResources());
             if(i==0){
                 data[i][1] = WebUtil.getSafeStr(total);
                 data[i][2] = WebUtil.getSafeStr(notAlloted);
@@ -72,7 +68,7 @@ private StatisticsBusinessDao statisticsBusinessDao;
 //    }
 
         Excel2007Util excel2007Util = new Excel2007Util();
-        excel2007Util.writeExcel(data, templatePath, "业务统计分析", response, 1, 300);
+        excel2007Util.writeExcel(data, templatePath, "名单统计分析", response, 1, 300);
 
     }
 }

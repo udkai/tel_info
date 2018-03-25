@@ -1,10 +1,9 @@
 package com.balance.statistics.controller;
 
-import com.balance.customer.VO.CustomerInfoSearchVO;
 import com.balance.customer.model.User;
 import com.balance.statistics.VO.StatisticsSearchVO;
 import com.balance.statistics.model.Statistics;
-import com.balance.statistics.service.StatisticsBusinessService;
+import com.balance.statistics.service.StatisticsResourcesService;
 import com.balance.util.config.PubConfig;
 import com.balance.util.controller.BaseController;
 import com.balance.util.global.GlobalConst;
@@ -26,10 +25,10 @@ import java.util.List;
  * Created by liukai on 2018/3/20.
  */
 @Controller
-@RequestMapping("/statistics/business")
-public class StatisticsBusinessController extends BaseController {
+@RequestMapping("/statistics/resources")
+public class StatisticsResourcesController extends BaseController {
     @Autowired
-    private StatisticsBusinessService statisticsBusinessService;
+    private StatisticsResourcesService statisticsResourcesService;
     @Autowired
     private PubConfig pubConfig;
 
@@ -42,23 +41,16 @@ public class StatisticsBusinessController extends BaseController {
     public ModelAndView index(HttpServletRequest request,StatisticsSearchVO statisticsSearchVO) {
 //        setBtnAutho(request, "CustomerInfo");
         ModelAndView mv = new ModelAndView();
-        int count = statisticsBusinessService.count(statisticsSearchVO);
+        int count = statisticsResourcesService.count(statisticsSearchVO);
         int pageIndex = WebUtil.getSafeInt(request.getParameter("pageIndex"), 1);// 获取当前页数
         int pageSize = GlobalConst.pageSize;// 直接取全局变量，每页记录数
         String url = createUrl(statisticsSearchVO, pageIndex, pageSize);
         PageNavigate pageNavigate = new PageNavigate(url, pageIndex, pageSize, count);//
-        List<User> userList = statisticsBusinessService.findUserList();
-         List<Statistics>businessList=statisticsBusinessService.listAll(statisticsSearchVO);
-         //名单总数
-         int total=statisticsBusinessService.countTotal(statisticsSearchVO);
-         //尚未分配名单
-         int notAlloted=statisticsBusinessService.countNotAlloted();
-         mv.addObject("total",total);
-         mv.addObject("notAlloted",notAlloted);
-        mv.addObject("userList", userList);
-        mv.addObject("businessList",businessList);
+         List<Statistics>resourcesList=statisticsResourcesService.listAll(statisticsSearchVO);
+         mv.addObject("pageNavigate",pageNavigate);
+        mv.addObject("resourcesList",resourcesList);
         mv.addObject("backUrl", StringUtil.encodeUrl(url));
-        mv.setViewName("statistics/business/index");
+        mv.setViewName("statistics/resources/index");
         return mv;
     }
     /**
@@ -66,14 +58,14 @@ public class StatisticsBusinessController extends BaseController {
      */
     @RequestMapping("/export")
     public void export(HttpServletRequest request, HttpServletResponse response, StatisticsSearchVO statisticsSearchVO) {
-        String templatePath = request.getRealPath("/template") + File.separator + "businessTemplate.xls";
+        String templatePath = request.getRealPath("/template") + File.separator + "resourcesTemplate.xls";
 
-        statisticsBusinessService.export(statisticsSearchVO,templatePath, response);
+        statisticsResourcesService.export(statisticsSearchVO,templatePath, response);
     }
 
 
     private String createUrl(StatisticsSearchVO statisticsSearchVO, int pageIndex, int pageSize) {
-        String url = pubConfig.getDynamicServer() + "/statistics/business/index.htm?";
+        String url = pubConfig.getDynamicServer() + "/statistics/Resources/index.htm?";
        if(statisticsSearchVO.getStartTime()!=null){
             url+="&startTime="+statisticsSearchVO.getStartTime();
        }
@@ -83,9 +75,7 @@ public class StatisticsBusinessController extends BaseController {
         if(StringUtil.isNotNullOrEmpty(statisticsSearchVO.getResources())){
             url+="&resources="+statisticsSearchVO.getResourcesParm();
         }
-        if(statisticsSearchVO.getUser_id()!=null){
-            url+="&userId="+statisticsSearchVO.getUser_id();
-        }
+
         return url;
     }
 

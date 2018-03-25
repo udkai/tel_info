@@ -8,7 +8,7 @@ import java.util.Date;
 public class StatisticsSearchVO {
     private Date startTime;
     private Date endTime;
-    private Integer userId;
+    private Integer user_id;
     private String resources;
 
     public Date getStartTime() {
@@ -27,12 +27,12 @@ public class StatisticsSearchVO {
         this.endTime = endTime;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public Integer getUser_id() {
+        return user_id;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setUser_id(Integer user_id) {
+        this.user_id = user_id;
     }
 
     public String getResources() {
@@ -51,7 +51,7 @@ public class StatisticsSearchVO {
         return "StatisticsSearchVO{" +
                 "startTime=" + startTime +
                 ", endTime=" + endTime +
-                ", userId='" + userId + '\'' +
+                ", userId='" + user_id + '\'' +
                 ", resources='" + resources + '\'' +
                 '}';
     }

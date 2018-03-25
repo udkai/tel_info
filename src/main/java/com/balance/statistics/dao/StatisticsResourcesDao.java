@@ -3,6 +3,7 @@ package com.balance.statistics.dao;
 import com.balance.customer.model.User;
 import com.balance.statistics.VO.StatisticsSearchVO;
 import com.balance.statistics.model.Statistics;
+import com.balance.util.string.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,7 +21,7 @@ import java.util.List;
  * Created by liukai on 2018/3/20.
  */
 @Repository
-public class StatisticsBusinessDao {
+public class StatisticsResourcesDao {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -51,7 +52,7 @@ public class StatisticsBusinessDao {
     }
 
     public int count(StatisticsSearchVO statisticsSearchVO) {
-        String sql = "select count(DISTINCT(user_name)) from t_customer_info  t where t.user_name is not null";
+        String sql = "select count(DISTINCT(resources)) from t_customer_info  t where t.resources is not null";
         sql += createSql(statisticsSearchVO);
         SqlParameterSource sqlParameterSource = new BeanPropertySqlParameterSource(statisticsSearchVO);
         NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
@@ -61,10 +62,12 @@ public class StatisticsBusinessDao {
     }
 
     public List listAll(StatisticsSearchVO statisticsSearchVO) {
-        String sql1 = "select '合计' user_name,\n" +
+        String sql1 = "select '合计' resources,\n" +
+                "count(*) as total,\n"+
+                "sum(case t.`status` when 0 then 1 else 0 end) as notAlloted,\n"+
                 "sum(case t.`status` when 1 then 1 else 0 end ) as alloted ,\n" +
                 "sum(case t.customer_status when 0 then 0 else 1 end ) as called,\n" +
-                "sum(case  when\tt.customer_status=0 and t.status=1 then 1 else 0\tend ) as status0, \n" +
+                "sum(case t.customer_status when\t0 then 1 else 0\tend ) as status0, \n" +
                 "sum(case t.customer_status when\t1 then 1 else 0\tend ) as status1,\n" +
                 "sum(case t.customer_status when\t2 then 1 else 0\tend ) as status2, \n" +
                 "sum(case t.customer_status when\t3 then 1 else 0\tend ) as status3,\n" +
@@ -72,12 +75,14 @@ public class StatisticsBusinessDao {
                 "sum(case t.customer_status when\t5 then 1 else 0\tend ) as status5,\n" +
                 "sum(case t.customer_status when\t6 then 1 else 0\tend ) as status6, \n" +
                 "sum(case t.customer_status when\t7 then 1 else 0\tend ) as status7 \n" +
-                "from t_customer_info t   where 1=1 \n";
+                "from t_customer_info t  where 1=1 \n";
         String sql2 = " UNION ALL\n" +
-                "select t.user_name,\n" +
+                "select t.resources,\n" +
+                "count(t.resources) as total,\n"+
+                "sum(case t.`status` when 0 then 1 else 0 end) as notAlloted,\n"+
                 "sum(case t.`status` when 1 then 1 else 0 end ) as alloted ,\n" +
                 "sum(case t.customer_status when 0 then 0 else 1 end ) as called,\n" +
-                "sum(case  when\tt.customer_status=0 and t.status=1 then 1 else 0\tend ) as status0, \n" +
+                "sum(case t.customer_status when\t0 then 1 else 0\tend ) as status0, \n" +
                 "sum(case t.customer_status when\t1 then 1 else 0\tend ) as status1,\n" +
                 "sum(case t.customer_status when\t2 then 1 else 0\tend ) as status2, \n" +
                 "sum(case t.customer_status when\t3 then 1 else 0\tend ) as status3,\n" +
@@ -85,8 +90,8 @@ public class StatisticsBusinessDao {
                 "sum(case t.customer_status when\t5 then 1 else 0\tend ) as status5,\n" +
                 "sum(case t.customer_status when\t6 then 1 else 0\tend ) as status6, \n" +
                 "sum(case t.customer_status when\t7 then 1 else 0\tend ) as status7 \n" +
-                "from t_customer_info t where 1=1 ";
-        String sql3 = " GROUP BY t.user_name  ";
+                "from t_customer_info t  where 1=1 ";
+        String sql3 = " GROUP BY t.resources  ";
         String sql = sql1 + createSql(statisticsSearchVO) + sql2 + createSql(statisticsSearchVO) + sql3;
         SqlParameterSource sqlParameterSource = new BeanPropertySqlParameterSource(statisticsSearchVO);
         NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
@@ -101,8 +106,9 @@ public class StatisticsBusinessDao {
         if (statisticsSearchVO.getEndTime() != null) {
 
         }
-        if (statisticsSearchVO.getUser_id() != null) {
-            sql += " and user_id=:user_id";
+
+        if (StringUtil.isNotNullOrEmpty(statisticsSearchVO.getResources())) {
+            sql += " and resources like :resourcesParm ";
         }
         return sql;
     }
