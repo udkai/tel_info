@@ -26,8 +26,8 @@ private StatisticsBusinessDao statisticsBusinessDao;
     public List<User> findUserList(){
         return statisticsBusinessDao.findUserList();
     }
-    public List listAll(StatisticsSearchVO statisticsSearchVO){
-        return statisticsBusinessDao.listAll(statisticsSearchVO);
+    public List listAll(StatisticsSearchVO statisticsSearchVO,int pageIndex, int pageSize){
+        return statisticsBusinessDao.listAll(statisticsSearchVO, pageIndex,  pageSize);
     }
     public int count(StatisticsSearchVO statisticsSearchVO){
         return statisticsBusinessDao.count(statisticsSearchVO);
@@ -38,8 +38,8 @@ private StatisticsBusinessDao statisticsBusinessDao;
     public int countNotAlloted(){
         return statisticsBusinessDao.countNotAlloted();
     }
-    public void export(StatisticsSearchVO statisticsSearchVO, String templatePath, HttpServletResponse response) {
-        List<Statistics> dataList = statisticsBusinessDao.listAll(statisticsSearchVO);
+    public void export(StatisticsSearchVO statisticsSearchVO, String templatePath, HttpServletResponse response,int pageIndex, int pageSize) {
+        List<Statistics> dataList = statisticsBusinessDao.listAll(statisticsSearchVO, pageIndex,  pageSize);
         //名单总数
         int total=statisticsBusinessDao.countTotal(statisticsSearchVO);
         //尚未分配名单

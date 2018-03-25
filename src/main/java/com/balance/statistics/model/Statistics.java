@@ -6,18 +6,18 @@ package com.balance.statistics.model;
 public class Statistics {
     private String resources;//名单来源
     private String user_name;;//业务员姓名
-    private int total;//名单总数
-    private int notAlloted;//尚未分配名单
-    private int alloted;//已经分配的名单数
-    private int called;//已呼叫的客户数
-    private int status0;//未呼叫的客户数
-    private int status1;//空号数
-    private int status2;//拒接数量
-    private int status3;//无人接听数量
-    private int status4;//尝试家微信
-    private int status5;//加微信通过
-    private int status6;//已经邀约数量
-    private int status7;//不需要数量
+    private Integer total;//名单总数
+    private Integer notAlloted;//尚未分配名单
+    private Integer alloted;//已经分配的名单数
+    private Integer called;//已呼叫的客户数
+    private Integer status0;//未呼叫的客户数
+    private Integer status1;//空号数
+    private Integer status2;//拒接数量
+    private Integer status3;//无人接听数量
+    private Integer status4;//尝试家微信
+    private Integer status5;//加微信通过
+    private Integer status6;//已经邀约数量
+    private Integer status7;//不需要数量
 
     @Override
     public String toString() {
@@ -39,19 +39,19 @@ public class Statistics {
                 '}';
     }
 
-    public int getTotal() {
+    public Integer getTotal() {
         return total;
     }
 
-    public void setTotal(int total) {
+    public void setTotal(Integer total) {
         this.total = total;
     }
 
-    public int getNotAlloted() {
+    public Integer getNotAlloted() {
         return notAlloted;
     }
 
-    public void setNotAlloted(int notAlloted) {
+    public void setNotAlloted(Integer notAlloted) {
         this.notAlloted = notAlloted;
     }
 
@@ -71,83 +71,83 @@ public class Statistics {
         this.user_name = user_name;
     }
 
-    public int getAlloted() {
+    public Integer getAlloted() {
         return alloted;
     }
 
-    public void setAlloted(int alloted) {
+    public void setAlloted(Integer alloted) {
         this.alloted = alloted;
     }
 
-    public int getCalled() {
+    public Integer getCalled() {
         return called;
     }
 
-    public void setCalled(int called) {
+    public void setCalled(Integer called) {
         this.called = called;
     }
 
-    public int getStatus0() {
+    public Integer getStatus0() {
         return status0;
     }
 
-    public void setStatus0(int status0) {
+    public void setStatus0(Integer status0) {
         this.status0 = status0;
     }
 
-    public int getStatus1() {
+    public Integer getStatus1() {
         return status1;
     }
 
-    public void setStatus1(int status1) {
+    public void setStatus1(Integer status1) {
         this.status1 = status1;
     }
 
-    public int getStatus2() {
+    public Integer getStatus2() {
         return status2;
     }
 
-    public void setStatus2(int status2) {
+    public void setStatus2(Integer status2) {
         this.status2 = status2;
     }
 
-    public int getStatus3() {
+    public Integer getStatus3() {
         return status3;
     }
 
-    public void setStatus3(int status3) {
+    public void setStatus3(Integer status3) {
         this.status3 = status3;
     }
 
-    public int getStatus4() {
+    public Integer getStatus4() {
         return status4;
     }
 
-    public void setStatus4(int status4) {
+    public void setStatus4(Integer status4) {
         this.status4 = status4;
     }
 
-    public int getStatus5() {
+    public Integer getStatus5() {
         return status5;
     }
 
-    public void setStatus5(int status5) {
+    public void setStatus5(Integer status5) {
         this.status5 = status5;
     }
 
-    public int getStatus6() {
+    public Integer getStatus6() {
         return status6;
     }
 
-    public void setStatus6(int status6) {
+    public void setStatus6(Integer status6) {
         this.status6 = status6;
     }
 
-    public int getStatus7() {
+    public Integer getStatus7() {
         return status7;
     }
 
-    public void setStatus7(int status7) {
+    public void setStatus7(Integer status7) {
         this.status7 = status7;
     }
 

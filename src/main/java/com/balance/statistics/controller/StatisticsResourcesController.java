@@ -46,7 +46,7 @@ public class StatisticsResourcesController extends BaseController {
         int pageSize = GlobalConst.pageSize;// 直接取全局变量，每页记录数
         String url = createUrl(statisticsSearchVO, pageIndex, pageSize);
         PageNavigate pageNavigate = new PageNavigate(url, pageIndex, pageSize, count);//
-         List<Statistics>resourcesList=statisticsResourcesService.listAll(statisticsSearchVO);
+         List<Statistics>resourcesList=statisticsResourcesService.listAll(statisticsSearchVO,pageIndex,  pageSize);
          mv.addObject("pageNavigate",pageNavigate);
         mv.addObject("resourcesList",resourcesList);
         mv.addObject("backUrl", StringUtil.encodeUrl(url));
@@ -59,8 +59,9 @@ public class StatisticsResourcesController extends BaseController {
     @RequestMapping("/export")
     public void export(HttpServletRequest request, HttpServletResponse response, StatisticsSearchVO statisticsSearchVO) {
         String templatePath = request.getRealPath("/template") + File.separator + "resourcesTemplate.xls";
-
-        statisticsResourcesService.export(statisticsSearchVO,templatePath, response);
+        int pageIndex = WebUtil.getSafeInt(request.getParameter("pageIndex"), 1);// 获取当前页数
+        int pageSize = GlobalConst.pageSize;// 直接取全局变量，每页记录数
+        statisticsResourcesService.export(statisticsSearchVO,templatePath, response,pageIndex,  pageSize);
     }
 
 

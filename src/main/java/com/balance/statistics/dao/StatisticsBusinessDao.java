@@ -3,6 +3,7 @@ package com.balance.statistics.dao;
 import com.balance.customer.model.User;
 import com.balance.statistics.VO.StatisticsSearchVO;
 import com.balance.statistics.model.Statistics;
+import com.balance.util.page.PageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -60,7 +61,7 @@ public class StatisticsBusinessDao {
         return count + 1;
     }
 
-    public List listAll(StatisticsSearchVO statisticsSearchVO) {
+    public List listAll(StatisticsSearchVO statisticsSearchVO ,int pageIndex, int pageSize) {
         String sql1 = "select '合计' user_name,\n" +
                 "sum(case t.`status` when 1 then 1 else 0 end ) as alloted ,\n" +
                 "sum(case t.customer_status when 0 then 0 else 1 end ) as called,\n" +
@@ -88,18 +89,20 @@ public class StatisticsBusinessDao {
                 "from t_customer_info t where 1=1 ";
         String sql3 = " GROUP BY t.user_name  ";
         String sql = sql1 + createSql(statisticsSearchVO) + sql2 + createSql(statisticsSearchVO) + sql3;
+        sql = PageUtil.createMysqlPageSql(sql, pageIndex, pageSize);
         SqlParameterSource sqlParameterSource = new BeanPropertySqlParameterSource(statisticsSearchVO);
         NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
-        return namedParameterJdbcTemplate.query(sql, sqlParameterSource, new BeanPropertyRowMapper<>(Statistics.class));
+        List list=  namedParameterJdbcTemplate.query(sql, sqlParameterSource, new BeanPropertyRowMapper<>(Statistics.class));
+        return list;
     }
 
     public String createSql(StatisticsSearchVO statisticsSearchVO) {
         String sql = "  ";
         if (statisticsSearchVO.getStartTime() != null) {
-
+            sql+=" and operate_at>=str_to_date(:startTime,'%Y-%m-%d')";
         }
         if (statisticsSearchVO.getEndTime() != null) {
-
+            sql+=" and operate_at<=str_to_date(:endTime,'%Y-%m-%d')";
         }
         if (statisticsSearchVO.getUser_id() != null) {
             sql += " and user_id=:user_id";

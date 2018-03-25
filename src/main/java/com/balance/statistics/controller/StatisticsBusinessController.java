@@ -48,7 +48,7 @@ public class StatisticsBusinessController extends BaseController {
         String url = createUrl(statisticsSearchVO, pageIndex, pageSize);
         PageNavigate pageNavigate = new PageNavigate(url, pageIndex, pageSize, count);//
         List<User> userList = statisticsBusinessService.findUserList();
-         List<Statistics>businessList=statisticsBusinessService.listAll(statisticsSearchVO);
+         List<Statistics>businessList=statisticsBusinessService.listAll(statisticsSearchVO,pageIndex,  pageSize);
          //名单总数
          int total=statisticsBusinessService.countTotal(statisticsSearchVO);
          //尚未分配名单
@@ -58,6 +58,7 @@ public class StatisticsBusinessController extends BaseController {
         mv.addObject("userList", userList);
         mv.addObject("businessList",businessList);
         mv.addObject("backUrl", StringUtil.encodeUrl(url));
+        mv.addObject("pageNavigate",pageNavigate);
         mv.setViewName("statistics/business/index");
         return mv;
     }
@@ -67,8 +68,9 @@ public class StatisticsBusinessController extends BaseController {
     @RequestMapping("/export")
     public void export(HttpServletRequest request, HttpServletResponse response, StatisticsSearchVO statisticsSearchVO) {
         String templatePath = request.getRealPath("/template") + File.separator + "businessTemplate.xls";
-
-        statisticsBusinessService.export(statisticsSearchVO,templatePath, response);
+        int pageIndex = WebUtil.getSafeInt(request.getParameter("pageIndex"), 1);// 获取当前页数
+        int pageSize = GlobalConst.pageSize;// 直接取全局变量，每页记录数
+        statisticsBusinessService.export(statisticsSearchVO,templatePath, response, pageIndex, pageSize);
     }
 
 
