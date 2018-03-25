@@ -25,7 +25,7 @@
                 <ul class="breadcrumb">
                     <li><i class="ace-icon fa fa-home home-icon"></i> <a href="#">首页</a></li>
                     <li class="active">统计分析</li>
-                    <li class="active">业务统计</li>
+                    <li class="active">来源统计</li>
                 </ul>
                 <!-- /.breadcrumb -->
             </div>
@@ -55,16 +55,11 @@
                                             <td><input type="text" id="txtEndTime"
                                                        class="form-control input-small" placeholder=""
                                                        value="${statisticsSearchVO.endTime }"></td>
-                                            <td>业务员：</td>
+                                            <td>名单：</td>
                                             <td>
-                                                <select id="user_id" name="user_id" class="width-150" style="width: 100px">
-                                                    <option value="">请选择</option>
-                                                    <c:forEach items="${userList}" var="user">
-                                                        <option value="${user.id}"
-                                                                <c:if test="${user.id==statisticsSearchVO.user_id}">selected</c:if>>${user.realname}</option>
-                                                    </c:forEach>
-                                                </select>
-                                            </td>
+                                                <input type="text" id="txtResources"
+                                                       class="form-control input-small" placeholder=""
+                                                       value="${statisticsSearchVO.resources }"></td>
                                             <td>
                                                 <button class="btn btn-primary btn-sm" id="btnSearch">
                                                     <i class="ace-icon fa fa-search"></i> 生成统计
@@ -90,7 +85,7 @@
                             <thead>
                             <tr>
                                 <th width=80>序号</th>
-                                <th width=120>业务员</th>
+                                <th width=120>名单来源</th>
                                 <th width=120>名单总数</th>
                                 <th width=100>尚未分配名单</th>
                                 <th width=100>已经分配名单</th>
@@ -106,22 +101,22 @@
                             </tr>
                             </thead>
                             <tbody id="tbody">
-                            <c:forEach items="${businessList }" var="business" varStatus="st">
+                            <c:forEach items="${resourcesList }" var="resources" varStatus="st">
                                 <tr>
                                     <td width=40>${st.index+1}</td>
-                                    <td>${business.user_name}</td>
-                                    <td><c:if test="${st.index==0}">${total}</c:if></td>
-                                    <td><c:if test="${st.index==0}">${notAlloted}</c:if></td>
-                                    <td>${business.alloted}</td>
-                                    <td>${business.called}</td>
-                                    <td>${business.status0}</td>
-                                    <td>${business.status1}</td>
-                                    <td>${business.status2}</td>
-                                    <td>${business.status3}</td>
-                                    <td>${business.status4}</td>
-                                    <td>${business.status5}</td>
-                                    <td>${business.status6}</td>
-                                    <td>${business.status7}</td>
+                                    <td>${resources.resources}</td>
+                                    <td>${resources.total}</td>
+                                    <td>${resources.notAlloted}</td>
+                                    <td>${resources.alloted}</td>
+                                    <td>${resources.called}</td>
+                                    <td>${resources.status0}</td>
+                                    <td>${resources.status1}</td>
+                                    <td>${resources.status2}</td>
+                                    <td>${resources.status3}</td>
+                                    <td>${resources.status4}</td>
+                                    <td>${resources.status5}</td>
+                                    <td>${resources.status6}</td>
+                                    <td>${resources.status7}</td>
                                 </tr>
                             </c:forEach>
                             </tbody>
@@ -130,9 +125,9 @@
                     <!-- /.span -->
                 </div>
 
-               <%-- <div class="row">
+                <div class="row">
                     <div class="col-xs-12">${ pageNavigate.pageModel}</div>
-                </div>--%>
+                </div>
             </div>
             <!-- /.main-content -->
         </div>
@@ -164,19 +159,8 @@
                 $("#btnDownload").bind('click', downloadModule);
             })
 
-            //下载报表
-            var downloadModule=function () {
-                var url = "export.htm?___=_";
-                if ($("#txtStartTime").val() != '')
-                    url += "&startTime=" + $("#txtStartTime").val();
-                if($("#txtStartTime").val()!=''){
-                    url+="&endTime="+$("#txtEndTime").val();
-                }
-                if($("#user_id").val()!=''){
-                    url+="&user_id="+$("#user_id").val();
-                }
-                window.location = encodeURI(url);
-            }
+
+
             // 查询方法
             var searchModule = function () {
                 var url = "index.htm?___=_";
@@ -186,10 +170,23 @@
                 if($("#txtStartTime").val()!=''){
                     url+="&endTime="+$("#txtEndTime").val();
                 }
-                if($("#user_id").val()!=''){
-                    url+="&user_id="+$("#user_id").val();
+                if($("#txtResources").val()!=''){
+                    url+="&resources="+$("#txtResources").val();
                 }
 
+                window.location = encodeURI(url);
+            }
+            //下载报表
+            var downloadModule = function () {
+                var url = "export.htm?___=_";
+                if ($("#txtStartTime").val() != '')
+                    url += "&startTime=" + $("#txtStartTime").val();
+                if($("#txtStartTime").val()!=''){
+                    url+="&endTime="+$("#txtEndTime").val();
+                }
+                if($("#txtResources").val()!=''){
+                    url+="&resources="+$("#txtResources").val();
+                }
                 window.location = encodeURI(url);
             }
 
