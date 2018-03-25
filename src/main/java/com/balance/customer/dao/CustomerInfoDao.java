@@ -108,6 +108,12 @@ public class CustomerInfoDao {
 		if(customerInfoSearchVO.getCustomer_status()!=null){
 			sql += " and customer_status = :customer_status";
 		}
+		if(StringUtil.isNotNullOrEmpty(customerInfoSearchVO.getStart_time())){
+			sql+=" and operate_at>=str_to_date(:start_time,'%Y-%m-%d')";
+		}
+		if(StringUtil.isNotNullOrEmpty(customerInfoSearchVO.getEnd_time())){
+			sql+=" and operate_at<=str_to_date(:end_time,'%Y-%m-%d')";
+		}
 		return sql;
 	}
 

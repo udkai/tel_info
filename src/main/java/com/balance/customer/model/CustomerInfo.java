@@ -21,8 +21,8 @@ public class CustomerInfo {
 	private Integer archive_status;//归档状态 0-未归档；1-已归档
 	private String create_by;//创建人
 	private Date create_at;//创建时间
-	private String last_modify_by;//修改人
-	private Date last_modify_at;//修改时间
+	private String operate_by;//修改人
+	private Date operate_at;//修改时间
 	private Date archive_time;//归档时间
 
 	@Override
@@ -41,8 +41,8 @@ public class CustomerInfo {
 				", archive_status=" + archive_status +
 				", create_by='" + create_by + '\'' +
 				", create_at=" + create_at +
-				", last_modify_by='" + last_modify_by + '\'' +
-				", last_modify_at=" + last_modify_at +
+				", operate_by='" + operate_by + '\'' +
+				", operate_at=" + operate_at +
 				", archive_time=" + archive_time +
 				'}';
 	}
@@ -160,20 +160,20 @@ public class CustomerInfo {
 		this.create_by = create_by;
 	}
 
-	public String getLast_modify_by() {
-		return last_modify_by;
+	public String getoperate_by() {
+		return operate_by;
 	}
 
-	public void setLast_modify_by(String last_modify_by) {
-		this.last_modify_by = last_modify_by;
+	public void setoperate_by(String operate_by) {
+		this.operate_by = operate_by;
 	}
 
-	public Date getLast_modify_at() {
-		return last_modify_at;
+	public Date getOperate_at() {
+		return operate_at;
 	}
 
-	public void setLast_modify_at(Date last_modify_at) {
-		this.last_modify_at = last_modify_at;
+	public void setOperate_at(Date operate_at) {
+		this.operate_at = operate_at;
 	}
 
 }

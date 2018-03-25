@@ -244,10 +244,10 @@ public class CustomerInfoService {
             data[i][4] = WebUtil.getSafeStr(StatusUtil.parseStatus(customerInfo.getCustomer_status()));
             data[i][5] = WebUtil.getSafeStr(customerInfo.getUser_id());
             data[i][6] = WebUtil.getSafeStr(customerInfo.getUser_name());
-            if (customerInfo.getLast_modify_at() == null) {
+            if (customerInfo.getOperate_at() == null) {
                 data[i][7] = "";
             } else {
-                data[i][7] = WebUtil.getSafeStr(DateUtil.dateToString(customerInfo.getLast_modify_at(), "yyyy-MM-dd HH:mm:ss"));
+                data[i][7] = WebUtil.getSafeStr(DateUtil.dateToString(customerInfo.getOperate_at(), "yyyy-MM-dd HH:mm:ss"));
             }
         }
 //    }
