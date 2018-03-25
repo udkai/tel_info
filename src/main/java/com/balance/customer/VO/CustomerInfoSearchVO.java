@@ -15,6 +15,8 @@ public class CustomerInfoSearchVO {
     private String customer_id_end;//客户编号
     private String resources;//信息来源
     private Integer customer_status;//客户状态
+    private String start_time;//起始时间（拨打电话时间）
+    private String end_time;//结束时间
 
     @Override
     public String toString() {
@@ -28,7 +30,25 @@ public class CustomerInfoSearchVO {
                 ", customer_id_end='" + customer_id_end + '\'' +
                 ", resources='" + resources + '\'' +
                 ", customer_status=" + customer_status +
+                ", start_time='" + start_time + '\'' +
+                ", end_time='" + end_time + '\'' +
                 '}';
+    }
+
+    public String getStart_time() {
+        return start_time;
+    }
+
+    public void setStart_time(String start_time) {
+        this.start_time = start_time;
+    }
+
+    public String getEnd_time() {
+        return end_time;
+    }
+
+    public void setEnd_time(String end_time) {
+        this.end_time = end_time;
     }
 
     public String getResources() {
