@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -85,9 +86,9 @@ public class CustomerAllotDao {
      * @param
      * @return 成功1 失败0 ;
      */
-    public int saveAllot(String customer_id_start, String customer_id_end,int user_id, String username) {
-        String sql = "UPDATE t_customer_info SET user_name=?, user_id= ? ,status=1  WHERE archive_status=0 and id  >=? and id<=?";
-        return jdbcTemplate.update(sql, new Object[]{username, user_id,customer_id_start,customer_id_end});
+    public int saveAllot(String customer_id_start, String customer_id_end,int user_id, String username,String allot_by,Date allot_at) {
+        String sql = "UPDATE t_customer_info SET user_name=?, user_id= ? ,allot_by=?,allot_at=?, status=1  WHERE archive_status=0 and id  >=? and id<=?";
+        return jdbcTemplate.update(sql, new Object[]{username, user_id,allot_by,allot_at,customer_id_start,customer_id_end});
     }
 
     /**
@@ -98,9 +99,9 @@ public class CustomerAllotDao {
      * @return
      */
     public int saveCancel(String customer_id_start, String customer_id_end,Integer user_id, String realname) {
-        String sql = "UPDATE t_customer_info SET user_name='', user_id=null ,status=0,last_modify_by=? WHERE archive_status=0 ";
+        String sql = "UPDATE t_customer_info SET user_name='', user_id=null ,status=0  WHERE archive_status=0 ";
         sql+=createCancelSql(customer_id_start,customer_id_end,user_id);
-        return jdbcTemplate.update(sql, realname);
+        return jdbcTemplate.update(sql);
     }
 
     /**

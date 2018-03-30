@@ -24,6 +24,8 @@ public class CustomerInfo {
 	private String operate_by;//修改人
 	private Date operate_at;//修改时间
 	private Date archive_time;//归档时间
+private String allot_by;//分配人
+private Date allot_at;//分配时间
 
 	@Override
 	public String toString() {
@@ -44,7 +46,33 @@ public class CustomerInfo {
 				", operate_by='" + operate_by + '\'' +
 				", operate_at=" + operate_at +
 				", archive_time=" + archive_time +
+				", allot_by='" + allot_by + '\'' +
+				", allot_at=" + allot_at +
 				'}';
+	}
+
+	public String getOperate_by() {
+		return operate_by;
+	}
+
+	public void setOperate_by(String operate_by) {
+		this.operate_by = operate_by;
+	}
+
+	public String getAllot_by() {
+		return allot_by;
+	}
+
+	public void setAllot_by(String allot_by) {
+		this.allot_by = allot_by;
+	}
+
+	public Date getAllot_at() {
+		return allot_at;
+	}
+
+	public void setAllot_at(Date allot_at) {
+		this.allot_at = allot_at;
 	}
 
 	public Date getArchive_time() {

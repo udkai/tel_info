@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -29,6 +30,19 @@ public class CustomerInfoDao {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
+	public List<CustomerInfo> listAllAllot(){
+		String sql="select * from t_customer_info t where t.status=1 ORDER BY t.user_id,t.id asc";
+		List<CustomerInfo> list=jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(CustomerInfo.class));
+		return list;
+	}
+	public int updateRelieve(String id_start, String id_end) {
+		String sql = "UPDATE t_customer_info SET user_name='', user_id=null ,status=0 WHERE archive_status=0 and id>="+id_start+" and id<="+id_end;
+		return jdbcTemplate.update(sql);
+	}
+	public int updateAllot(String id_start, String id_end,String userId,String userName,String allot_by,Date allot_at) {
+		String sql = "UPDATE t_customer_info SET user_name=?, user_id=? ,allot_by=?,allot_at=? WHERE archive_status=0 and id>="+id_start+" and id<="+id_end;
+		return jdbcTemplate.update(sql,userName,userId,allot_by,allot_at);
+	}
 	/**
 	 * 查询
 	 *
@@ -108,11 +122,17 @@ public class CustomerInfoDao {
 		if(customerInfoSearchVO.getCustomer_status()!=null){
 			sql += " and customer_status = :customer_status";
 		}
-		if(StringUtil.isNotNullOrEmpty(customerInfoSearchVO.getStart_time())){
-			sql+=" and operate_at>=str_to_date(:start_time,'%Y-%m-%d')";
+		if(StringUtil.isNotNullOrEmpty(customerInfoSearchVO.getOperate_at_start())){
+			sql+=" and operate_at>=str_to_date(:operate_at_start,'%Y-%m-%d')";
 		}
-		if(StringUtil.isNotNullOrEmpty(customerInfoSearchVO.getEnd_time())){
-			sql+=" and operate_at<=str_to_date(:end_time,'%Y-%m-%d')";
+		if(StringUtil.isNotNullOrEmpty(customerInfoSearchVO.getOperate_at_end())){
+			sql+=" and operate_at<=str_to_date(:operate_at_end,'%Y-%m-%d')";
+		}
+		if(StringUtil.isNotNullOrEmpty(customerInfoSearchVO.getAllot_at_start())){
+			sql+=" and allot_at>=str_to_date(:allot_at_start,'%Y-%m-%d')";
+		}
+		if(StringUtil.isNotNullOrEmpty(customerInfoSearchVO.getAllot_at_end())){
+			sql+=" and allot_at<=str_to_date(:allot_at_end,'%Y-%m-%d')";
 		}
 		return sql;
 	}
@@ -125,8 +145,8 @@ public class CustomerInfoDao {
 	 */
 	public int add(CustomerInfo customerInfo) {
 		NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
-		String sql = "INSERT INTO t_customer_info(id,name,mobile, remark,remark_status,user_name,user_id,resources,status,create_by, create_at,last_modify_by,last_modify_at)  "
-				+ " VALUES(:id,:name,:mobile, :remark,:remark_status,:user_name,:user_id,:resources,:status,:create_by, now(),:last_modify_by,:last_modify_at) ";
+		String sql = "INSERT INTO t_customer_info(id,name,mobile, remark,remark_status,user_name,user_id,resources,status,create_by, create_at)  "
+				+ " VALUES(:id,:name,:mobile, :remark,:remark_status,:user_name,:user_id,:resources,:status,:create_by, now()) ";
 		SqlParameterSource paramSource = new BeanPropertySqlParameterSource(customerInfo);
 		return namedParameterJdbcTemplate.update(sql, paramSource);
 	}
@@ -137,8 +157,8 @@ public class CustomerInfoDao {
 	 */
 	public void batchAdd(CustomerInfo customerInfo) {
 		NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
-		String sql = "INSERT INTO t_customer_info(id,name,mobile, remark,remark_status,user_name,user_id,resources,status,customer_status,create_by, create_at,last_modify_by,last_modify_at)  "
-				+ " VALUES(:id,:name,:mobile, :remark,:remark_status,:user_name,:user_id,:resources,:status,0,:create_by, now(),:last_modify_by,:last_modify_at) ";
+		String sql = "INSERT INTO t_customer_info(id,name,mobile, remark,remark_status,user_name,user_id,resources,status,customer_status,create_by, create_at)  "
+				+ " VALUES(:id,:name,:mobile, :remark,:remark_status,:user_name,:user_id,:resources,:status,0,:create_by, :create_at) ";
 		SqlParameterSource[] params = SqlParameterSourceUtils.createBatch(new Object[]{customerInfo});
 		int[]num= namedParameterJdbcTemplate.batchUpdate(sql, params);
 	}

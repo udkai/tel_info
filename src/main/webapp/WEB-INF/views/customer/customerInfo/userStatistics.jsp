@@ -11,10 +11,6 @@
             text-align: center;
             color: white;
         }
-        input{
-            width:80px;
-            max-width: 100%;
-        }
     </style>
 </head>
 
@@ -90,14 +86,14 @@
 
                                             <td>
                                                 <button class="btn btn-primary btn-sm" id="btnExport">
-                                                     导出
+                                                    导出
                                                 </button>
                                             </td>
                                             <td>
                                                 <a href="#student-modal" class="btn btn-primary btn-sm"
                                                    data-backdrop="static"
                                                    data-toggle="modal">
-                                                   导入</a>
+                                                    导入</a>
 
                                             </td>
                                         </tr>
@@ -133,7 +129,7 @@
                                                        value="${customerInfoSearchVO.resources }"></td>
                                             <td>
                                                 <button class="btn btn-primary btn-sm" id="btnSearch">
-                                                     查询
+                                                    查询
                                                 </button>
                                             </td>
                                             <td>
@@ -180,70 +176,53 @@
 
                 <!-- PAGE CONTENT BEGINS -->
                 <div class="row">
-                    <div class="col-xs-12" id="customerInfo">
-                        <table id="treeTable" class="table table-striped table-bordered table-hover">
+                    <!-- 业务员统计显示-->
+                    <div class="col-xs-12 " id="userStatistics">
+                        <table class="table table-striped table-bordered table-hover">
                             <thead>
                             <tr>
-                                <th width=60>
-                                    <label> <input name="module" class="ace father" type="checkbox" id="all_select"/>
-                                        <span class="lbl"></span>
-                                    </label>
-                                </th>
-                                <th width=60>序号</th>
-                                <th width=60>客户编号</th>
-                                <th width=80>姓名</th>
-                                <th width=100>电话号码</th>
-                                <th width=180>备注</th>
-                                <th width=140>客户状态</th>
-                                <th width=100>归档状态</th>
-                                <th width=180>名单来源</th>
-                                <th width=160>所属业务员编号</th>
-                                <th width=160>所属业务员姓名</th>
-                                <th width="180">分配时间</th>
-                                <th width="180">操作时间</th>
+                                <th width=10>序号</th>
+                                <th width=60>业务员</th>
+                                <th width=60>分配情况</th>
+                                <th width="241">操作</th>
                             </tr>
                             </thead>
-                            <tbody id="tbody">
-                            <c:forEach items="${customerInfoList }" var="customer" varStatus="st">
+                            <tbody id="tbody1">
+                            <c:forEach items="${list }" var="userSection" varStatus="st">
                                 <tr>
-                                    <td>
-                                        <label>
-                                            <input name="module" class="ace father" type="checkbox"/>
-                                            <span class="lbl"></span>
-                                        </label>
-                                    </td>
                                     <td width=40>${st.index+1}</td>
-                                    <td>${customer.id}</td>
-                                    <td>${customer.name}</td>
-                                    <td>${customer.mobile}</td>
-                                    <td>${customer.remark}</td>
+                                    <td>${userSection.user_name}</td>
+                                    <td>${userSection.id_section}</td>
                                     <td>
-                                        <c:if test="${customer.customer_status==0}">为空</c:if>
-                                        <c:if test="${customer.customer_status==1}">空号</c:if>
-                                        <c:if test="${customer.customer_status==2}">拒接</c:if>
-                                        <c:if test="${customer.customer_status==3}">无人接听</c:if>
-                                        <c:if test="${customer.customer_status==4}">尝试加微信</c:if>
-                                        <c:if test="${customer.customer_status==5}">加微信通过</c:if>
-                                        <c:if test="${customer.customer_status==6}">已经邀约</c:if>
-                                        <c:if test="${customer.customer_status==7}">不需要</c:if>
+                                        <div class="col-md-3">
+                                            <button class="btn btn-primary btn-sm" id="btnCancel" onclick="relieve(this)">
+                                                 解除分配
+                                            </button>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="col-md-4">
+                                            <span >转分配给</span>
+                                            </div>
+                                            <div class="col-md-8">
+                                            <select  name="user_id" class="width-100 ">
+                                                <option value="">请选择</option>
+                                                <c:forEach items="${userList}" var="user">
+                                                    <option value="${user.id}" >${user.realname}</option>
+                                                </c:forEach>
+                                            </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <button class="btn btn-primary btn-sm" id="btnAllot" onclick="allot(this)">
+                                                分配
+                                            </button>
+                                        </div>
                                     </td>
-                                    <td>
-                                        <c:if test="${customer.archive_status==0}">未归档</c:if>
-                                        <c:if test="${customer.archive_status==1}">已归档</c:if>
-                                    </td>
-                                    <td>${customer.resources}</td>
-                                    <td>${customer.user_id}</td>
-                                    <td>${customer.user_name}</td>
-                                    <td><fmt:formatDate value="${customer.allot_at}"
-                                                        pattern="yyyy-MM-dd HH:mm:ss"/></td>
-                                    <td><fmt:formatDate value="${customer.operate_at}"
-                                                        pattern="yyyy-MM-dd HH:mm:ss"/></td>
                                 </tr>
                             </c:forEach>
                             </tbody>
                         </table>
                     </div>
-
 
                     <!-- /.span -->
                 </div>
@@ -363,35 +342,21 @@
                 $("#btnSearch").bind('click', searchModule);
                 $("#btnExport").bind('click', exportModule);
                 $("#btnArchive").bind('click', ArchiveModule);
-                $("#btnUserStatistics").bind('click', userStatisticsModule);
+                $("#btnUserStatistics").bind('click', userStatisticsModule);//业务员统计显示
+
                 $("#all_select").change(function () {
                     //全选复选框事件
                     $(":checkbox", $("#treeTable")).prop("checked", $(this).prop("checked"));
                 });
 
-                $('#allot_at_end').datepicker({
+                $('#txtStartTime').datepicker({
                     format: "yyyy-mm-dd",
                     autoclose: true,
                     todayHighlight: true,
                     language: "zh-CN",
                     orientation: "bottom auto"
                 });
-                $('#allot_at_start').datepicker({
-                    format: "yyyy-mm-dd",
-                    autoclose: true,
-                    todayHighlight: true,
-                    language: "zh-CN",
-                    orientation: "bottom auto"
-                });
-
-                $('#operate_at_end').datepicker({
-                    format: "yyyy-mm-dd",
-                    autoclose: true,
-                    todayHighlight: true,
-                    language: "zh-CN",
-                    orientation: "bottom auto"
-                });
-                $('#operate_at_start').datepicker({
+                $('#txtEndTime').datepicker({
                     format: "yyyy-mm-dd",
                     autoclose: true,
                     todayHighlight: true,
@@ -481,11 +446,37 @@
                     $("#btnSearch").click();
                 })
             })
+            /**
+             * 解除分配该号段
+             * @param btn
+             */
+            var relieve=function(btn){
+                var idSection=$(btn).parent().parent().prev().html();
+                var backurl="${dynamicServer}/customer/customerInfo/listNumberSection.htm";
+                var url="relieve.htm?&idSection="+idSection+"&backUrl="+backurl;
+                bootbox.confirm("您确定要解除分配吗？", function (result) {
+                    if (result) {
+                        window.location = encodeURI(url);
+                    }
+                })
+            }
+            /**
+             * 分配该号段给业务员
+             * @param btn
+             */
+            var allot=function(btn){
+                var idSection=$(btn).parent().parent().prev().html();
+                var userId=$(btn).parent().prev().find("select").val();
+                var userName=$(btn).parent().prev().find("select").find("option:selected").html();
+                var backurl="${dynamicServer}/customer/customerInfo/listNumberSection.htm";
+                var url="allot.htm?&idSection="+idSection+"&userId="+userId+"&userName="+userName+"&backUrl="+backurl;
+                window.location = encodeURI(url);
+            }
             //业务员统计显示
-           var userStatisticsModule=function () {
-               var url="listNumberSection.htm";
-               window.location = encodeURI(url);
-           }
+            var userStatisticsModule = function () {
+                var url = "listNumberSection.htm";
+                window.location = encodeURI(url);
+            }
             // 查询方法
             var searchModule = function () {
                 var url = "index.htm?___=_";
@@ -512,17 +503,11 @@
                 if ($("#customer_status").val() != '') {
                     url += "&customer_status=" + $("#customer_status").val();
                 }
-                if($("#allot_at_end").val()!=''){
-                    url+="&allot_at_end="+$("#allot_at_end").val();
+                if ($("#txtStartTime").val() != '') {
+                    url += "&start_time=" + $("#txtStartTime").val();
                 }
-                if($("#allot_at_start").val()!=''){
-                    url+="&allot_at_start="+$("#allot_at_start").val();
-                }
-                if($("#operate_at_end").val()!=''){
-                    url+="&operate_at_end="+$("#operate_at_end").val();
-                }
-                if($("#operate_at_start").val()!=''){
-                    url+="&operate_at_start="+$("#operate_at_start").val();
+                if ($("#txtEndTime").val() != '') {
+                    url += "&end_time=" + $("#txtEndTime").val();
                 }
                 window.location = encodeURI(url);
             }
@@ -552,17 +537,11 @@
                 if ($("#customer_status").val() != '') {
                     url += "&customer_status=" + $("#customer_status").val();
                 }
-                if($("#allot_at_end").val()!=''){
-                    url+="&allot_at_end="+$("#allot_at_end").val();
+                if ($("#txtStartTime").val() != '') {
+                    url += "&start_time=" + $("#txtStartTime").val();
                 }
-                if($("#allot_at_start").val()!=''){
-                    url+="&allot_at_start="+$("#allot_at_start").val();
-                }
-                if($("#operate_at_end").val()!=''){
-                    url+="&operate_at_end="+$("#operate_at_end").val();
-                }
-                if($("#operate_at_start").val()!=''){
-                    url+="&operate_at_start="+$("#operate_at_start").val();
+                if ($("#txtEndTime").val() != '') {
+                    url += "&end_time=" + $("#txtEndTime").val();
                 }
                 window.location = encodeURI(url);
             }

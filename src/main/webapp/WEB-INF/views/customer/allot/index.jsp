@@ -217,7 +217,7 @@
                                     <td><c:if test="${customer.status==0}"><span style="color: red;">未分配</span></c:if>
                                         <c:if test="${customer.status==1}">已分配</c:if>
                                     </td>
-                                    <td><fmt:formatDate value="${customer.last_modify_at}"
+                                    <td><fmt:formatDate value="${customer.operate_at}"
                                                         pattern="yyyy-MM-dd HH:mm:ss"/></td>
                                 </tr>
                             </c:forEach>

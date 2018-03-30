@@ -25,7 +25,7 @@
     </listener>
     <context-param>
         <param-name>webAppRootKey</param-name>
-        <param-value>bln_wfx.root</param-value>
+        <param-value>tel_info.root</param-value>
     </context-param>
     <listener>
         <listener-class>org.springframework.web.util.WebAppRootListener</listener-class>

@@ -51,8 +51,8 @@ public class CustomerMobileDao {
      * @return
      */
     public int saveRemark(String remark, String user_name, String id,Integer customer_status) {
-        String sql = "UPDATE t_customer_info set remark=?,remark_status =1, last_modify_by =? , user_name = ?,last_modify_at = now(),customer_status=? where id =?";
-        return jdbcTemplate.update(sql, remark, user_name, user_name,customer_status, id);
+        String sql = "UPDATE t_customer_info set remark=?,remark_status =1, operate_by =? ,operate_at=now(),customer_status=? where id =?";
+        return jdbcTemplate.update(sql, remark, user_name, customer_status, id);
     }
 
     /**

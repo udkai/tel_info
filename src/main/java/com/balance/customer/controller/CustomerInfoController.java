@@ -4,6 +4,7 @@ package com.balance.customer.controller;
 import com.balance.customer.VO.CustomerInfoSearchVO;
 import com.balance.customer.model.CustomerInfo;
 import com.balance.customer.model.User;
+import com.balance.customer.model.UserSection;
 import com.balance.customer.service.CustomerInfoService;
 import com.balance.util.code.SerialNumUtil;
 import com.balance.util.config.PubConfig;
@@ -11,6 +12,7 @@ import com.balance.util.controller.BaseController;
 import com.balance.util.date.DateUtil;
 import com.balance.util.file.FileUtil;
 import com.balance.util.global.GlobalConst;
+import com.balance.util.json.JsonUtil;
 import com.balance.util.page.PageNavigate;
 import com.balance.util.session.SessionUtil;
 import com.balance.util.string.StringUtil;
@@ -25,6 +27,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -39,6 +42,7 @@ public class CustomerInfoController extends BaseController {
     private CustomerInfoService customerInfoService;
     @Autowired
     private PubConfig pubConfig;
+
     /**
      * @return 页面
      */
@@ -60,6 +64,62 @@ public class CustomerInfoController extends BaseController {
         mv.setViewName("customer/customerInfo/index");
 
         return mv;
+    }
+
+    /**
+     * 业务员统计显示
+     */
+    @RequestMapping("/listNumberSection")
+    public ModelAndView listNumberSection(HttpServletRequest request) {
+        ModelAndView mv = new ModelAndView();
+        List<UserSection> list = customerInfoService.listAllAllot();
+        List<User> userList = customerInfoService.findUserList();
+//        int count = list.size();
+//        int pageIndex = WebUtil.getSafeInt(request.getParameter("pageIndex"), 1);// 获取当前页数
+//        int pageSize = GlobalConst.pageSize;// 直接取全局变量，每页记录数
+//        String url = pubConfig.getDynamicServer() + "/customer/customerInfo/listNumberSection.htm?";
+        mv.addObject("userList", userList);
+        mv.addObject("list", list);
+        mv.setViewName("customer/customerInfo/userStatistics");
+        return mv;
+    }
+
+
+    /**
+     * 解除该号段分配
+     * @param request
+     * @param idSection
+     * @param response
+     * @return
+     */
+    @RequestMapping("/relieve")
+    public String relieve(HttpServletRequest request, String idSection, HttpServletResponse response) {
+        String[]ids=idSection.split("-");
+        int flag = customerInfoService.updateRelieve(ids[0],ids[1]);
+        if (flag == 0)
+            return "forward:/error.htm?msg=" + StringUtil.encodeUrl("操作失败！");
+        else
+            return "forward:/success.htm?msg=" + StringUtil.encodeUrl("操作成功！");
+    }
+
+    /**
+     * 分配该号段
+     * @param request
+     * @param idSection
+     * @param userId
+     * @param response
+     * @return
+     */
+    @RequestMapping("/allot")
+    public String allot(HttpServletRequest request, String idSection,String userId,String userName, HttpServletResponse response) {
+        String[]ids=idSection.split("-");
+        String allot_by=SessionUtil.getUserSession(request).getUser_name();
+        Date allot_at=new Date();
+        int flag = customerInfoService.updateAllot(ids[0],ids[1],userId,userName,allot_by,allot_at);
+        if (flag == 0)
+            return "forward:/error.htm?msg=" + StringUtil.encodeUrl("操作失败！");
+        else
+            return "forward:/success.htm?msg=" + StringUtil.encodeUrl("操作成功！");
     }
 
     private String createUrl(CustomerInfoSearchVO customerInfoSearchVO, int pageIndex, int pageSize) {
@@ -87,6 +147,18 @@ public class CustomerInfoController extends BaseController {
         }
         if (customerInfoSearchVO.getCustomer_status() != null) {
             url += "&customer_status=" + customerInfoSearchVO.getCustomer_status();
+        }
+        if (StringUtil.isNotNullOrEmpty(customerInfoSearchVO.getAllot_at_start())) {
+            url += "&allot_at_start=" + customerInfoSearchVO.getAllot_at_start();
+        }
+        if (StringUtil.isNotNullOrEmpty(customerInfoSearchVO.getAllot_at_end())) {
+            url += "&allot_at_end=" + customerInfoSearchVO.getAllot_at_end();
+        }
+        if (StringUtil.isNotNullOrEmpty(customerInfoSearchVO.getOperate_at_start())) {
+            url += "&operate_at_start=" + customerInfoSearchVO.getOperate_at_start();
+        }
+        if (StringUtil.isNotNullOrEmpty(customerInfoSearchVO.getOperate_at_end())) {
+            url += "&operate_at_end=" + customerInfoSearchVO.getOperate_at_end();
         }
         return url;
     }
@@ -142,7 +214,7 @@ public class CustomerInfoController extends BaseController {
     public void export(HttpServletRequest request, HttpServletResponse response, CustomerInfoSearchVO customerInfoSearchVO) {
         String templatePath = request.getRealPath("/template") + File.separator + "template.xls";
 
-        customerInfoService.export(customerInfoSearchVO,templatePath, response);
+        customerInfoService.export(customerInfoSearchVO, templatePath, response);
     }
 
     @RequestMapping("/delete")

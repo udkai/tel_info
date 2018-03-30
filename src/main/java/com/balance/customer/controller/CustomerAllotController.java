@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -109,8 +110,9 @@ public class CustomerAllotController {
      */
     @RequestMapping("/saveAllot")
     public String saveAllot(HttpServletRequest request, HttpServletResponse response,String customer_id_start, String customer_id_end, Integer user_id, String username) {
-
-        int flag = customerAllotService.saveAllot(customer_id_start,customer_id_end, user_id, username);
+        String allot_by=SessionUtil.getUserSession(request).getRealname();
+        Date allot_at=new Date();
+        int flag = customerAllotService.saveAllot(customer_id_start,customer_id_end, user_id, username,allot_by,allot_at);
         if (flag == 0)
             return "forward:/error.htm?msg=" + StringUtil.encodeUrl("客户分配失败！");
         else

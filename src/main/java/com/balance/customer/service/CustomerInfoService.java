@@ -6,22 +6,26 @@ import com.balance.customer.VO.CustomerInfoSearchVO;
 import com.balance.customer.dao.CustomerInfoDao;
 import com.balance.customer.model.CustomerInfo;
 import com.balance.customer.model.User;
+import com.balance.customer.model.UserSection;
 import com.balance.customer.util.StatusUtil;
 import com.balance.util.date.DateUtil;
 import com.balance.util.excel.Excel2007Util;
 import com.balance.util.string.StringUtil;
 import com.balance.util.web.WebUtil;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.poi.util.ArrayUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
 /**
  * Created by dsy on 2017/4/17.
- * 学员档案  Service
+ * 客户信息  Service
  */
 @Service
 public class CustomerInfoService {
@@ -39,6 +43,120 @@ public class CustomerInfoService {
      */
     public List<CustomerInfo> search(CustomerInfoSearchVO customerInfoSearchVO, int pageIndex, int pageSize) {
         return customerInfoDao.search(customerInfoSearchVO, pageIndex, pageSize);
+    }
+
+    public int updateRelieve(String idStart, String idEnd) {
+        customerInfoDao.updateRelieve(idStart,idEnd);
+        return 1;
+    }
+    public int updateAllot(String idStart, String idEnd,String userId,String userName,String allot_by,Date allot_at ) {
+       int count= customerInfoDao.updateAllot(idStart,idEnd,userId,userName,allot_by,allot_at);
+        return count;
+    }
+    /**
+     * 查询每个业务员的号码段
+     *
+     * @return
+     */
+    public List<UserSection> listAllAllot() {
+        List<UserSection> listSec = new ArrayList<>();
+        List<CustomerInfo> list = customerInfoDao.listAllAllot();
+        if (list.size() == 0) {
+            return null;
+        }
+        UserSection user = new UserSection();
+        String user_name1 = list.get(0).getUser_name();
+//        int[]id=new int[]{};
+        List<Integer> ids = new ArrayList<>();
+         if (list.size() == 1) {
+            user.setUser_name(user_name1);
+            ids.add(Integer.valueOf(list.get(0).getId()));
+            user.setId(ids);
+            listSec.add(user);
+        } else {
+            for (int i = 1; i < list.size(); i++) {
+                user.setUser_name(list.get(i - 1).getUser_name());
+                ids.add(Integer.valueOf(list.get(i - 1).getId()));
+                user.setId(ids);
+                if (i == list.size() - 1) {
+                    String name_i = list.get(i).getUser_name();
+                    if (user_name1.equals(name_i)) {
+                        ids.add(Integer.valueOf(list.get(i).getId()));
+                        user.setId(ids);
+                        listSec.add(user);
+                    }
+                }
+
+                String name_i = list.get(i).getUser_name();
+                if (!user_name1.equals(name_i)) {
+                    listSec.add(user);
+                    user = new UserSection();
+                    ids = new ArrayList<>();
+                    user_name1 = name_i;
+                    if (i == list.size() - 1) {
+                        user.setUser_name(name_i);
+                        ids.add(Integer.valueOf(list.get(i).getId()));
+                        user.setId(ids);
+                        listSec.add(user);
+                    }
+                }
+            }
+            System.out.println("第一次：" + listSec);
+        }
+        List listSec2 = new ArrayList();
+        //判断id，连续的转成号段
+        for (int i = 0; i < listSec.size(); i++) {
+            List<Integer> list_id = listSec.get(i).getId();
+            String user_name = listSec.get(i).getUser_name();
+            List<String> listNum = toSection(list_id);
+            for (int j = 0; j < listNum.size(); j++) {
+                UserSection userSection = new UserSection();
+                userSection.setUser_name(user_name);
+                userSection.setId_section(listNum.get(j));
+                listSec2.add(userSection);
+            }
+        }
+        System.out.println("第二次：" + listSec2);
+        return listSec2;
+    }
+
+    /**
+     * 数字转成号段  如：1，2，3，5,6,7
+     *
+     * @param arg
+     * @return
+     */
+    public List<String> toSection(List<Integer> arg) {
+        List<String> list = new ArrayList();
+        List<Integer> ids = arg;
+        int a = ids.get(0);
+        int b, c;
+        String str;
+        if (ids.size() == 1) {
+            str = String.format("%08d", a) + "-" + String.format("%08d", a);
+            list.add(str);
+            System.out.println("长度1：" + list);
+            return list;
+        }
+        for (int i = 1; i < ids.size(); i++) {
+            b = ids.get(i - 1);
+            c = ids.get(i);
+            if (b + 1 != c) {
+                str = String.format("%08d", a) + "-" + String.format("%08d", b);
+                list.add(str);
+                a = c;
+            }
+            if (i == ids.size() - 1) {
+                if (b + 1 != c) {
+                    str = String.format("%08d", a) + "-" + String.format("%08d", c);
+                    list.add(str);
+                } else {
+                    str = String.format("%08d", a) + "-" + String.format("%08d", c);
+                    list.add(str);
+                }
+            }
+        }
+        return list;
     }
 
     public int count(CustomerInfoSearchVO customerInfoSearchVO) {
@@ -119,6 +237,7 @@ public class CustomerInfoService {
             return checkResult;
         // 3导入数据
         List<CustomerInfo> listTrans = transData(list);
+        Date create_at=new Date();
         for (CustomerInfo customerInfo : listTrans) {
             String customer_old_id = commonDao.getCustomerId();
             customer_old_id = customer_old_id == null ? "00000001" : customer_old_id;
@@ -128,6 +247,7 @@ public class CustomerInfoService {
             customerInfo.setStatus(0);
             customerInfo.setRemark_status(0);
             customerInfo.setCreate_by(create_person);// 导入人
+            customerInfo.setCreate_at(create_at);
             customerInfoDao.batchAdd(customerInfo);
             commonDao.updateCustomerId(customer_id);
         }
@@ -149,7 +269,7 @@ public class CustomerInfoService {
 //            hashClass.put(vo.getContent(), vo.getValue());
 //        }
         //校验文件内电话是否重复
-       StringBuffer sb = new StringBuffer();
+        StringBuffer sb = new StringBuffer();
        /*  String[] tels = new String[list.size()];
         int j = 0;
         for (String[] str : list) {
@@ -179,7 +299,7 @@ public class CustomerInfoService {
             if (StringUtil.isNullOrEmpty(str[0])) {
                 sb.append("第" + i + "行姓名为空" + "<br/>");
             }
-            if (str[1].length()>30) {
+            if (str[1].length() > 30) {
                 sb.append("第" + i + "行电话号码长度过长" + "<br/>");
             }
 //            CustomerInfo customerInfo = customerInfoDao.getByMobile(str[1]);
@@ -200,6 +320,7 @@ public class CustomerInfoService {
     public static boolean isMobile(String mobile) {
         return Pattern.matches(REGEX_MOBILE, mobile);
     }
+
     /**
      * 转换数据
      *

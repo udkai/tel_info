@@ -17,6 +17,22 @@ public class CustomerInfoSearchVO {
     private Integer customer_status;//客户状态
     private String start_time;//起始时间（拨打电话时间）
     private String end_time;//结束时间
+    private String allot_at_start;//分配时间起
+    private String allot_at_end;//分配时间止
+    private String operate_at_start;//操作时间起
+    private String operate_at_end;//操作时间止
+
+    public String getStart_time() {
+        return start_time;
+    }
+
+    public void setStart_time(String start_time) {
+        this.start_time = start_time;
+    }
+
+    public String getEnd_time() {
+        return end_time;
+    }
 
     @Override
     public String toString() {
@@ -32,19 +48,43 @@ public class CustomerInfoSearchVO {
                 ", customer_status=" + customer_status +
                 ", start_time='" + start_time + '\'' +
                 ", end_time='" + end_time + '\'' +
+                ", allot_at_start='" + allot_at_start + '\'' +
+                ", allot_at_end='" + allot_at_end + '\'' +
+                ", operate_at_start='" + operate_at_start + '\'' +
+                ", operate_at_end='" + operate_at_end + '\'' +
                 '}';
     }
 
-    public String getStart_time() {
-        return start_time;
+    public String getAllot_at_start() {
+        return allot_at_start;
     }
 
-    public void setStart_time(String start_time) {
-        this.start_time = start_time;
+    public void setAllot_at_start(String allot_at_start) {
+        this.allot_at_start = allot_at_start;
     }
 
-    public String getEnd_time() {
-        return end_time;
+    public String getAllot_at_end() {
+        return allot_at_end;
+    }
+
+    public void setAllot_at_end(String allot_at_end) {
+        this.allot_at_end = allot_at_end;
+    }
+
+    public String getOperate_at_start() {
+        return operate_at_start;
+    }
+
+    public void setOperate_at_start(String operate_at_start) {
+        this.operate_at_start = operate_at_start;
+    }
+
+    public String getOperate_at_end() {
+        return operate_at_end;
+    }
+
+    public void setOperate_at_end(String operate_at_end) {
+        this.operate_at_end = operate_at_end;
     }
 
     public void setEnd_time(String end_time) {

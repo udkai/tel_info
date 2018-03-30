@@ -49,10 +49,8 @@ private StatisticsResourcesDao statisticsResourcesDao;
         for (int i = 0; i < dataList.size(); i++) {
             Statistics statistics=dataList.get(i);
             data[i][0] = WebUtil.getSafeStr(statistics.getResources());
-            if(i==0){
-                data[i][1] = WebUtil.getSafeStr(total);
-                data[i][2] = WebUtil.getSafeStr(notAlloted);
-            }
+            data[i][1] = WebUtil.getSafeStr(statistics.getTotal());
+            data[i][2] = WebUtil.getSafeStr(statistics.getNotAlloted());
             data[i][3] = WebUtil.getSafeStr(statistics.getAlloted());
             data[i][4] = WebUtil.getSafeStr(statistics.getCalled());
             data[i][5] = WebUtil.getSafeStr(statistics.getStatus0());

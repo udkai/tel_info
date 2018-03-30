@@ -7,6 +7,7 @@ import com.balance.customer.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -41,9 +42,8 @@ public class CustomerAllotService {
      * @param username
      * @return
      */
-    public int saveAllot(String customer_id_start, String customer_id_end,int user_id, String username) {
-        customerAllotDao.saveAllot(customer_id_start,customer_id_end, user_id, username);
-        return 1;
+    public int saveAllot(String customer_id_start, String customer_id_end,int user_id, String username,String allot_by,Date allot_at) {
+       return customerAllotDao.saveAllot(customer_id_start,customer_id_end, user_id, username,allot_by,allot_at);
     }
 
     public int saveCancel(String customer_id_start, String customer_id_end,Integer user_id,String realname){
