@@ -79,8 +79,10 @@
 	<mvc:interceptors>
 		<mvc:interceptor>
 			<mvc:mapping path="/customer/*/*" />
+			<mvc:mapping path="/statistics/*/*" />
 			<mvc:mapping path="/sys/*/*" />
 			<mvc:mapping path="/base/*/*" />
+
 			<bean class="com.balance.config.interceptor.CheckLoginInterceptor"></bean>
 		</mvc:interceptor>
 		<!-- -->
