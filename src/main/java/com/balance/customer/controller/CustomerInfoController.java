@@ -70,9 +70,9 @@ public class CustomerInfoController extends BaseController {
      * 业务员统计显示
      */
     @RequestMapping("/listNumberSection")
-    public ModelAndView listNumberSection(HttpServletRequest request) {
+    public ModelAndView listNumberSection(HttpServletRequest request,Integer user_id) {
         ModelAndView mv = new ModelAndView();
-        List<UserSection> list = customerInfoService.listAllAllot();
+        List<UserSection> list = customerInfoService.listAllAllot(user_id);
         List<User> userList = customerInfoService.findUserList();
 //        int count = list.size();
 //        int pageIndex = WebUtil.getSafeInt(request.getParameter("pageIndex"), 1);// 获取当前页数
@@ -93,9 +93,9 @@ public class CustomerInfoController extends BaseController {
      * @return
      */
     @RequestMapping("/relieve")
-    public String relieve(HttpServletRequest request, String idSection, HttpServletResponse response) {
+    public String relieve(HttpServletRequest request, String idSection,Integer id, HttpServletResponse response) {
         String[]ids=idSection.split("-");
-        int flag = customerInfoService.updateRelieve(ids[0],ids[1]);
+        int flag = customerInfoService.updateRelieve(ids[0],ids[1],id);
         if (flag == 0)
             return "forward:/error.htm?msg=" + StringUtil.encodeUrl("操作失败！");
         else
@@ -111,11 +111,11 @@ public class CustomerInfoController extends BaseController {
      * @return
      */
     @RequestMapping("/allot")
-    public String allot(HttpServletRequest request, String idSection,String userId,String userName, HttpServletResponse response) {
+    public String allot(HttpServletRequest request,Integer id, String idSection,Integer userId,String userName, HttpServletResponse response) {
         String[]ids=idSection.split("-");
         String allot_by=SessionUtil.getUserSession(request).getUser_name();
         Date allot_at=new Date();
-        int flag = customerInfoService.updateAllot(ids[0],ids[1],userId,userName,allot_by,allot_at);
+        int flag = customerInfoService.updateAllot(id,ids[0],ids[1],userId,userName,allot_by,allot_at);
         if (flag == 0)
             return "forward:/error.htm?msg=" + StringUtil.encodeUrl("操作失败！");
         else

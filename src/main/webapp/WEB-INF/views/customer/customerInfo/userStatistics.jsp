@@ -183,7 +183,7 @@
                             <tr>
                                 <th width=10>序号</th>
                                 <th width=60>业务员</th>
-                                <th width=60>分配情况</th>
+                                <th width=120>分配情况</th>
                                 <th width="241">操作</th>
                             </tr>
                             </thead>
@@ -192,8 +192,9 @@
                                 <tr>
                                     <td width=40>${st.index+1}</td>
                                     <td>${userSection.user_name}</td>
-                                    <td>${userSection.id_section}</td>
+                                    <td>${userSection.id_section_start}</td>
                                     <td>
+                                        <input hidden value="${userSection.id}">
                                         <div class="col-md-3">
                                             <button class="btn btn-primary btn-sm" id="btnCancel" onclick="relieve(this)">
                                                  解除分配
@@ -452,8 +453,9 @@
              */
             var relieve=function(btn){
                 var idSection=$(btn).parent().parent().prev().html();
+                var id=$(btn).parent().prev().val();
                 var backurl="${dynamicServer}/customer/customerInfo/listNumberSection.htm";
-                var url="relieve.htm?&idSection="+idSection+"&backUrl="+backurl;
+                var url="relieve.htm?&idSection="+idSection+"&id="+id+"&backUrl="+backurl;
                 bootbox.confirm("您确定要解除分配吗？", function (result) {
                     if (result) {
                         window.location = encodeURI(url);
@@ -466,10 +468,11 @@
              */
             var allot=function(btn){
                 var idSection=$(btn).parent().parent().prev().html();
+                var id=$(btn).parent().prevAll().eq(0).val();
                 var userId=$(btn).parent().prev().find("select").val();
                 var userName=$(btn).parent().prev().find("select").find("option:selected").html();
                 var backurl="${dynamicServer}/customer/customerInfo/listNumberSection.htm";
-                var url="allot.htm?&idSection="+idSection+"&userId="+userId+"&userName="+userName+"&backUrl="+backurl;
+                var url="allot.htm?&idSection="+idSection+"&userId="+userId+"&id="+id+"&userName="+userName+"&backUrl="+backurl;
                 window.location = encodeURI(url);
             }
             //业务员统计显示

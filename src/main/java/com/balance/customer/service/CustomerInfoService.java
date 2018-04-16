@@ -45,80 +45,93 @@ public class CustomerInfoService {
         return customerInfoDao.search(customerInfoSearchVO, pageIndex, pageSize);
     }
 
-    public int updateRelieve(String idStart, String idEnd) {
-        customerInfoDao.updateRelieve(idStart,idEnd);
+    public int updateRelieve(String idStart, String idEnd, int id) {
+        customerInfoDao.updateRelieve(idStart, idEnd);
+        customerInfoDao.deleteUserSectionById(id);
         return 1;
     }
-    public int updateAllot(String idStart, String idEnd,String userId,String userName,String allot_by,Date allot_at ) {
-       int count= customerInfoDao.updateAllot(idStart,idEnd,userId,userName,allot_by,allot_at);
+
+    public int updateAllot(int id, String idStart, String idEnd, Integer userId, String userName, String allot_by, Date allot_at) {
+        int count = customerInfoDao.updateAllot(idStart, idEnd, userId, userName, allot_by, allot_at);
+        UserSection userSection = new UserSection();
+        userSection.setId(id);
+        userSection.setUser_id(userId);
+        userSection.setUser_name(userName);
+        customerInfoDao.updateUserSection(userSection);
         return count;
     }
+
+    public List<UserSection> listAllAllot(Integer user_id) {
+        List<UserSection> listSec = customerInfoDao.listUserSection(user_id);
+        return listSec;
+    }
+
     /**
      * 查询每个业务员的号码段
      *
      * @return
      */
-    public List<UserSection> listAllAllot() {
-        List<UserSection> listSec = new ArrayList<>();
-        List<CustomerInfo> list = customerInfoDao.listAllAllot();
-        if (list.size() == 0) {
-            return null;
-        }
-        UserSection user = new UserSection();
-        String user_name1 = list.get(0).getUser_name();
-//        int[]id=new int[]{};
-        List<Integer> ids = new ArrayList<>();
-         if (list.size() == 1) {
-            user.setUser_name(user_name1);
-            ids.add(Integer.valueOf(list.get(0).getId()));
-            user.setId(ids);
-            listSec.add(user);
-        } else {
-            for (int i = 1; i < list.size(); i++) {
-                user.setUser_name(list.get(i - 1).getUser_name());
-                ids.add(Integer.valueOf(list.get(i - 1).getId()));
-                user.setId(ids);
-                if (i == list.size() - 1) {
-                    String name_i = list.get(i).getUser_name();
-                    if (user_name1.equals(name_i)) {
-                        ids.add(Integer.valueOf(list.get(i).getId()));
-                        user.setId(ids);
-                        listSec.add(user);
-                    }
-                }
-
-                String name_i = list.get(i).getUser_name();
-                if (!user_name1.equals(name_i)) {
-                    listSec.add(user);
-                    user = new UserSection();
-                    ids = new ArrayList<>();
-                    user_name1 = name_i;
-                    if (i == list.size() - 1) {
-                        user.setUser_name(name_i);
-                        ids.add(Integer.valueOf(list.get(i).getId()));
-                        user.setId(ids);
-                        listSec.add(user);
-                    }
-                }
-            }
-            System.out.println("第一次：" + listSec);
-        }
-        List listSec2 = new ArrayList();
-        //判断id，连续的转成号段
-        for (int i = 0; i < listSec.size(); i++) {
-            List<Integer> list_id = listSec.get(i).getId();
-            String user_name = listSec.get(i).getUser_name();
-            List<String> listNum = toSection(list_id);
-            for (int j = 0; j < listNum.size(); j++) {
-                UserSection userSection = new UserSection();
-                userSection.setUser_name(user_name);
-                userSection.setId_section(listNum.get(j));
-                listSec2.add(userSection);
-            }
-        }
-        System.out.println("第二次：" + listSec2);
-        return listSec2;
-    }
+//    public List<UserSection> listAllAllot1() {
+//        List<UserSection> listSec = new ArrayList<>();
+//        List<CustomerInfo> list = customerInfoDao.listAllAllot();
+//        if (list.size() == 0) {
+//            return null;
+//        }
+//        UserSection user = new UserSection();
+//        String user_name1 = list.get(0).getUser_name();
+////        int[]id=new int[]{};
+//        List<Integer> ids = new ArrayList<>();
+//         if (list.size() == 1) {
+//            user.setUser_name(user_name1);
+//            ids.add(Integer.valueOf(list.get(0).getId()));
+//            user.setId(ids);
+//            listSec.add(user);
+//        } else {
+//            for (int i = 1; i < list.size(); i++) {
+//                user.setUser_name(list.get(i - 1).getUser_name());
+//                ids.add(Integer.valueOf(list.get(i - 1).getId()));
+//                user.setId(ids);
+//                if (i == list.size() - 1) {
+//                    String name_i = list.get(i).getUser_name();
+//                    if (user_name1.equals(name_i)) {
+//                        ids.add(Integer.valueOf(list.get(i).getId()));
+//                        user.setId(ids);
+//                        listSec.add(user);
+//                    }
+//                }
+//
+//                String name_i = list.get(i).getUser_name();
+//                if (!user_name1.equals(name_i)) {
+//                    listSec.add(user);
+//                    user = new UserSection();
+//                    ids = new ArrayList<>();
+//                    user_name1 = name_i;
+//                    if (i == list.size() - 1) {
+//                        user.setUser_name(name_i);
+//                        ids.add(Integer.valueOf(list.get(i).getId()));
+//                        user.setId(ids);
+//                        listSec.add(user);
+//                    }
+//                }
+//            }
+//            System.out.println("第一次：" + listSec);
+//        }
+//        List listSec2 = new ArrayList();
+//        //判断id，连续的转成号段
+//        for (int i = 0; i < listSec.size(); i++) {
+//            List<Integer> list_id = listSec.get(i).getId();
+//            String user_name = listSec.get(i).getUser_name();
+//            List<String> listNum = toSection(list_id);
+//            for (int j = 0; j < listNum.size(); j++) {
+//                UserSection userSection = new UserSection();
+//                userSection.setUser_name(user_name);
+//                userSection.setId_section(listNum.get(j));
+//                listSec2.add(userSection);
+//            }
+//        }
+//        System.out.println("第二次：" + listSec2);
+//        return listSec2;
+//    }
 
     /**
      * 数字转成号段  如：1，2，3，5,6,7
@@ -237,7 +250,7 @@ public class CustomerInfoService {
             return checkResult;
         // 3导入数据
         List<CustomerInfo> listTrans = transData(list);
-        Date create_at=new Date();
+        Date create_at = new Date();
         for (CustomerInfo customerInfo : listTrans) {
             String customer_old_id = commonDao.getCustomerId();
             customer_old_id = customer_old_id == null ? "00000001" : customer_old_id;

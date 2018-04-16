@@ -4,6 +4,7 @@ import ch.qos.logback.core.net.SyslogOutputStream;
 import com.balance.customer.VO.CustomerInfoSearchVO;
 import com.balance.customer.model.CustomerInfo;
 import com.balance.customer.model.User;
+import com.balance.customer.model.UserSection;
 import com.balance.util.page.PageUtil;
 import com.balance.util.string.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,14 @@ public class CustomerInfoDao {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
+	public List<UserSection> listUserSection(Integer user_id){
+		String sql= "select id,user_id,user_name,id_section_start,id_section_end from t_user_section";
+		if(user_id!=null){
+			sql+=" where user_id=?";
+			return jdbcTemplate.query(sql,new Object[]{user_id},BeanPropertyRowMapper.newInstance(UserSection.class));
+		}
+		return jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(UserSection.class));
+	}
 	public List<CustomerInfo> listAllAllot(){
 		String sql="select * from t_customer_info t where t.status=1 ORDER BY t.user_id,t.id asc";
 		List<CustomerInfo> list=jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(CustomerInfo.class));
@@ -39,9 +48,15 @@ public class CustomerInfoDao {
 		String sql = "UPDATE t_customer_info SET user_name='', user_id=null ,status=0 WHERE archive_status=0 and id>="+id_start+" and id<="+id_end;
 		return jdbcTemplate.update(sql);
 	}
-	public int updateAllot(String id_start, String id_end,String userId,String userName,String allot_by,Date allot_at) {
+	public int updateAllot(String id_start, String id_end,Integer userId,String userName,String allot_by,Date allot_at) {
 		String sql = "UPDATE t_customer_info SET user_name=?, user_id=? ,allot_by=?,allot_at=? WHERE archive_status=0 and id>="+id_start+" and id<="+id_end;
 		return jdbcTemplate.update(sql,userName,userId,allot_by,allot_at);
+	}
+	public int updateUserSection(UserSection userSection){
+		String sql="update  t_user_section set user_id=:user_id,user_name=:user_name where id=:id";
+		SqlParameterSource params = new BeanPropertySqlParameterSource(userSection);
+		NamedParameterJdbcTemplate namedJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
+		return namedJdbc.update(sql,params);
 	}
 	/**
 	 * 查询
@@ -50,7 +65,7 @@ public class CustomerInfoDao {
 	 * @return 客户信息列表
 	 */
 	public List<CustomerInfo> search(CustomerInfoSearchVO customerInfoSearchVO, int pageIndex, int pageSize) {
-		String sql = "select * from t_customer_info ";
+		String sql = "select id,name,mobile,remark,remark_status,archive_status,resources,user_id,user_name,allot_at,operate_at from t_customer_info ";
 		sql += createSql(customerInfoSearchVO);
 		sql = PageUtil.createMysqlPageSql(sql, pageIndex, pageSize);
 		SqlParameterSource params = new BeanPropertySqlParameterSource(customerInfoSearchVO);
@@ -200,5 +215,14 @@ public class CustomerInfoDao {
 		List<CustomerInfo> list = jdbcTemplate.query(sql, new Object[] { mobile }, BeanPropertyRowMapper.newInstance(CustomerInfo.class));
 		return list.size() > 0 ? list.get(0) : null;
 
+	}
+	/**
+	 * 删除业务员号段表信息
+	 * @param id
+	 * @return
+	 */
+	public int deleteUserSectionById(Integer id){
+		String sql="delete from t_user_section where id=?";
+		return jdbcTemplate.update(sql,new Object[]{id});
 	}
 }

@@ -2,6 +2,7 @@ package com.balance.customer.dao;
 
 import com.balance.customer.model.CustomerInfo;
 import com.balance.customer.model.ResourcesInfo;
+import com.balance.customer.model.UserSection;
 import com.balance.util.page.PageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -54,13 +55,21 @@ public class ResourcesDao {
         String sql = "DELETE  from  t_customer_info  where resources=? and create_at=STR_TO_DATE(?,'%Y-%m-%d %H:%i:%s') ";
         return jdbcTemplate.update(sql, resources, create_at);
     }
-    public List<CustomerInfo> listAllAllot(String resources,String create_at){
-        String sql="select * from t_customer_info t where t.status=1 and t.resources=? and t.create_at=STR_TO_DATE(?,'%Y-%m-%d %H:%i:%s')  ORDER BY t.user_id,t.allot_at,t.id asc";
-        List<CustomerInfo> list=jdbcTemplate.query(sql,new Object[]{resources,create_at},new BeanPropertyRowMapper<>(CustomerInfo.class));
+    public int deleteResourceSection(String resources, String create_at) {
+        String sql = "DELETE  from  t_resources_section  where resources=? and create_at=STR_TO_DATE(?,'%Y-%m-%d %H:%i:%s') ";
+        return jdbcTemplate.update(sql, resources, create_at);
+    }
+    public int deleteResourceSectionById(int id) {
+        String sql = "DELETE  from  t_resources_section  where id=? ";
+        return jdbcTemplate.update(sql, id);
+    }
+    public List<UserSection> listAllAllot(String resources){
+        String sql="select * from t_resources_section t where t.resources=?  ORDER BY t.user_id,t.id asc";
+        List<UserSection> list=jdbcTemplate.query(sql,new Object[]{resources},new BeanPropertyRowMapper<>(UserSection.class));
         return list;
     }
     public int updateRelieves(String resources,String user_name,String allot_at,String id_start, String id_end) {
-        String sql = "UPDATE t_customer_info SET user_name='', user_id=null ,status=0 WHERE archive_status=0 and resources=? and user_name=? and allot_at=STR_TO_DATE(?,'%Y-%m-%d %H:%i:%s') and id>=? and id<=?";
+        String sql = "UPDATE t_customer_info SET remark='',remark_status=0, user_name='', user_id=null ,status=0 WHERE archive_status=0 and resources=? and user_name=? and allot_at=STR_TO_DATE(?,'%Y-%m-%d %H:%i:%s') and id>=? and id<=?";
         int count= jdbcTemplate.update(sql,resources,user_name,allot_at,id_start,id_end);
         return count;
     }

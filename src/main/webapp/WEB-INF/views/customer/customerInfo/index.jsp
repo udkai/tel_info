@@ -483,7 +483,11 @@
             })
             //业务员统计显示
            var userStatisticsModule=function () {
-               var url="listNumberSection.htm";
+
+               var url="listNumberSection.htm?";
+               if ($("#user_id").val() != '') {
+                   url += "user_id=" + $("#user_id").val();
+               }
                window.location = encodeURI(url);
            }
             // 查询方法

@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
+ * 来源管理
  * Created by liukai on 2018/3/20.
  */
 @Controller
@@ -69,9 +70,9 @@ public class ResourcesController extends BaseController{
      * @return
      */
     @RequestMapping("/relieves")
-    public String relieves(HttpServletRequest request, String resources,String allot_at, String user_name,String idSection ) {
+    public String relieves(HttpServletRequest request,Integer id, String resources,String allot_at, String user_name,String idSection ) {
         String[]ids=idSection.split("-");
-        int flag = resourcesService.updateRelieves(resources,user_name,allot_at,ids[0],ids[1]);
+        int flag = resourcesService.updateRelieves(id,resources,user_name,allot_at,ids[0],ids[1]);
         if (flag == 0)
             return "forward:/error.htm?msg=" + StringUtil.encodeUrl("操作失败！");
         else
@@ -93,10 +94,19 @@ public class ResourcesController extends BaseController{
         else
             return "forward:/success.htm?msg=" + StringUtil.encodeUrl("操作成功！");
     }
+
+    /**
+     * 分配显示
+     * @param request
+     * @param resources_allot
+     * @param create_at
+     * @param response
+     * @return
+     */
     @RequestMapping("/allotShow")
     public ModelAndView showAll(HttpServletRequest request, String resources_allot,String create_at, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView();
-        List<UserSection> list = resourcesService.listAllAllot(resources_allot,create_at);
+        List<UserSection> list = resourcesService.listAllAllot(resources_allot);
 //        int count = list.size();
 //        int pageIndex = WebUtil.getSafeInt(request.getParameter("pageIndex"), 1);// 获取当前页数
 //        int pageSize = GlobalConst.pageSize;// 直接取全局变量，每页记录数
