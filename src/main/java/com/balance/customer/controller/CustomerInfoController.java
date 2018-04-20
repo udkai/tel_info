@@ -3,6 +3,7 @@ package com.balance.customer.controller;
 
 import com.balance.customer.VO.CustomerInfoSearchVO;
 import com.balance.customer.model.CustomerInfo;
+import com.balance.customer.model.Section;
 import com.balance.customer.model.User;
 import com.balance.customer.model.UserSection;
 import com.balance.customer.service.CustomerInfoService;
@@ -72,14 +73,17 @@ public class CustomerInfoController extends BaseController {
     @RequestMapping("/listNumberSection")
     public ModelAndView listNumberSection(HttpServletRequest request,Integer user_id) {
         ModelAndView mv = new ModelAndView();
-        List<UserSection> list = customerInfoService.listAllAllot(user_id);
+        List<Section> list = customerInfoService.listSection(user_id);
         List<User> userList = customerInfoService.findUserList();
-//        int count = list.size();
-//        int pageIndex = WebUtil.getSafeInt(request.getParameter("pageIndex"), 1);// 获取当前页数
-//        int pageSize = GlobalConst.pageSize;// 直接取全局变量，每页记录数
-//        String url = pubConfig.getDynamicServer() + "/customer/customerInfo/listNumberSection.htm?";
+        int count = list.size();
+        int pageIndex = WebUtil.getSafeInt(request.getParameter("pageIndex"), 1);// 获取当前页数
+        int pageSize = GlobalConst.pageSize;// 直接取全局变量，每页记录数
+        String url = pubConfig.getDynamicServer() + "/customer/customerInfo/listNumberSection.htm?";
+        PageNavigate pageNavigate = new PageNavigate(url, pageIndex, pageSize, count);//
         mv.addObject("userList", userList);
         mv.addObject("list", list);
+        mv.addObject("pageNavigate", pageNavigate);
+        mv.addObject("backUrl", StringUtil.encodeUrl(url));
         mv.setViewName("customer/customerInfo/userStatistics");
         return mv;
     }
@@ -95,7 +99,7 @@ public class CustomerInfoController extends BaseController {
     @RequestMapping("/relieve")
     public String relieve(HttpServletRequest request, String idSection,Integer id, HttpServletResponse response) {
         String[]ids=idSection.split("-");
-        int flag = customerInfoService.updateRelieve(ids[0],ids[1],id);
+        int flag = customerInfoService.updateRelieve(ids[0],ids[1]);
         if (flag == 0)
             return "forward:/error.htm?msg=" + StringUtil.encodeUrl("操作失败！");
         else
@@ -111,11 +115,11 @@ public class CustomerInfoController extends BaseController {
      * @return
      */
     @RequestMapping("/allot")
-    public String allot(HttpServletRequest request,Integer id, String idSection,Integer userId,String userName, HttpServletResponse response) {
+    public String allot(HttpServletRequest request, String idSection,Integer userId,String userName, HttpServletResponse response) {
         String[]ids=idSection.split("-");
         String allot_by=SessionUtil.getUserSession(request).getUser_name();
         Date allot_at=new Date();
-        int flag = customerInfoService.updateAllot(id,ids[0],ids[1],userId,userName,allot_by,allot_at);
+        int flag = customerInfoService.updateAllot(ids[0],ids[1],userId,userName,allot_by,allot_at);
         if (flag == 0)
             return "forward:/error.htm?msg=" + StringUtil.encodeUrl("操作失败！");
         else
@@ -236,6 +240,21 @@ public class CustomerInfoController extends BaseController {
     public String archive(String customer_id) {
         customer_id = customer_id.substring(0, customer_id.length() - 1);
         int flag = customerInfoService.update(customer_id);
+        if (flag == 0)
+            return "forward:/error.htm?msg=" + StringUtil.encodeUrl("客户信息归档失败");
+        else
+            return "forward:/success.htm?msg=" + StringUtil.encodeUrl("客户信息归档成功");
+
+    }
+
+    /**
+     * 全部归档
+     * @param customerInfoSearchVO
+     * @return
+     */
+    @RequestMapping("/allArchive")
+    public String allArchive(CustomerInfoSearchVO customerInfoSearchVO) {
+        int flag = customerInfoService.update(customerInfoSearchVO);
         if (flag == 0)
             return "forward:/error.htm?msg=" + StringUtil.encodeUrl("客户信息归档失败");
         else

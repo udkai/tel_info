@@ -25,7 +25,7 @@
                 <ul class="breadcrumb">
                     <li><i class="ace-icon fa fa-home home-icon"></i> <a href="#">首页</a></li>
                     <li class="active">客户信息管理</li>
-                    <li class="active">客户信息查询</li>
+                    <li class="active">客户信息查询2</li>
                 </ul>
                 <!-- /.breadcrumb -->
             </div>
@@ -82,20 +82,6 @@
                                                     </c:forEach>
                                                 </select>
                                             </td>
-
-
-                                            <td>
-                                                <button class="btn btn-primary btn-sm" id="btnExport">
-                                                    导出
-                                                </button>
-                                            </td>
-                                            <td>
-                                                <a href="#student-modal" class="btn btn-primary btn-sm"
-                                                   data-backdrop="static"
-                                                   data-toggle="modal">
-                                                    导入</a>
-
-                                            </td>
                                         </tr>
                                         <tr>
                                             <td>客户编号</td>
@@ -127,17 +113,6 @@
                                                        class="form-control  "
                                                        placeholder="" maxlength="8"
                                                        value="${customerInfoSearchVO.resources }"></td>
-                                            <td>
-                                                <button class="btn btn-primary btn-sm" id="btnSearch">
-                                                    查询
-                                                </button>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-primary btn-sm" id="btnDel">
-                                                    删除
-                                                </button>
-                                            </td>
-
                                         </tr>
                                         <tr>
                                             <td>分配时间起</td>
@@ -156,15 +131,42 @@
                                             <td><input type="text" id="operate_at_end"
                                                        class="form-control " placeholder=""
                                                        value="${customerInfoSearchVO.operate_at_end }"></td>
-                                            <td>
-                                                <button class="btn btn-primary btn-sm" id="btnUserStatistics">
-                                                    业务员统计显示
-                                                </button>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-primary btn-sm" id="btnArchive">
-                                                    客户归档
-                                                </button>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="8">
+                                                <div style="text-align: center">
+                                                    <button class="btn btn-primary btn-sm" id="btnSearch"
+                                                            style="margin-right: 30px">
+                                                        查询
+                                                    </button>
+
+                                                    <button class="btn btn-primary btn-sm" id="btnDel"
+                                                            style="margin-right: 30px">
+                                                        删除
+                                                    </button>
+                                                    <a href="#student-modal" class="btn btn-primary btn-sm"
+                                                       data-backdrop="static"
+                                                       data-toggle="modal" style="margin-right: 30px">
+                                                        导入</a>
+                                                    <button class="btn btn-primary btn-sm" id="btnExport"
+                                                            style="margin-right: 30px">
+                                                        导出
+                                                    </button>
+
+
+                                                    <button class="btn btn-primary btn-sm" id="btnArchive"
+                                                            style="margin-right: 30px">
+                                                        选择归档
+                                                    </button>
+                                                    <button class="btn btn-primary btn-sm" id="btnAllArchive"
+                                                            style="margin-right: 30px">
+                                                        全部归档
+                                                    </button>
+                                                    <button class="btn btn-primary btn-sm" id="btnUserStatistics"
+                                                            style="margin-right: 30px">
+                                                        业务员统计显示
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     </table>
@@ -192,9 +194,8 @@
                                 <tr>
                                     <td width=40>${st.index+1}</td>
                                     <td>${userSection.user_name}</td>
-                                    <td>${userSection.id_section_start}</td>
+                                    <td>${userSection.id_min}-${userSection.id_max}</td>
                                     <td>
-                                        <input hidden value="${userSection.id}">
                                         <div class="col-md-3">
                                             <button class="btn btn-primary btn-sm" id="btnCancel" onclick="relieve(this)">
                                                  解除分配
@@ -206,7 +207,6 @@
                                             </div>
                                             <div class="col-md-8">
                                             <select  name="user_id" class="width-100 ">
-                                                <option value="">请选择</option>
                                                 <c:forEach items="${userList}" var="user">
                                                     <option value="${user.id}" >${user.realname}</option>
                                                 </c:forEach>
@@ -214,6 +214,7 @@
                                             </div>
                                         </div>
                                         <div class="col-md-3">
+                                            <%--<input hidden value="${userSection.id}">--%>
                                             <button class="btn btn-primary btn-sm" id="btnAllot" onclick="allot(this)">
                                                 分配
                                             </button>
@@ -452,10 +453,11 @@
              * @param btn
              */
             var relieve=function(btn){
+
                 var idSection=$(btn).parent().parent().prev().html();
-                var id=$(btn).parent().prev().val();
+//                var id=$(btn).prev().val();
                 var backurl="${dynamicServer}/customer/customerInfo/listNumberSection.htm";
-                var url="relieve.htm?&idSection="+idSection+"&id="+id+"&backUrl="+backurl;
+                var url="relieve.htm?&idSection="+idSection+"&backUrl="+backurl;
                 bootbox.confirm("您确定要解除分配吗？", function (result) {
                     if (result) {
                         window.location = encodeURI(url);
@@ -468,16 +470,17 @@
              */
             var allot=function(btn){
                 var idSection=$(btn).parent().parent().prev().html();
-                var id=$(btn).parent().prevAll().eq(0).val();
+//                var id=$(btn).prev().val();
                 var userId=$(btn).parent().prev().find("select").val();
                 var userName=$(btn).parent().prev().find("select").find("option:selected").html();
                 var backurl="${dynamicServer}/customer/customerInfo/listNumberSection.htm";
-                var url="allot.htm?&idSection="+idSection+"&userId="+userId+"&id="+id+"&userName="+userName+"&backUrl="+backurl;
+                var url="allot.htm?&idSection="+idSection+"&userId="+userId+"&userName="+userName+"&backUrl="+backurl;
                 window.location = encodeURI(url);
             }
             //业务员统计显示
             var userStatisticsModule = function () {
-                var url = "listNumberSection.htm";
+                var url = "listNumberSection.htm?";
+                url += "user_id=" + $("#user_id").val();
                 window.location = encodeURI(url);
             }
             // 查询方法
@@ -588,6 +591,52 @@
                 var backUrl = "${dynamicServer}/customer/customerInfo/index.htm";
                 var url2 = "${dynamicServer}/customer/customerInfo/archive.htm?backUrl=" + backUrl + "&customer_id=" + customer_id;
                 window.location = encodeURI(url2);
+            }
+            //客户全部归档
+            var allArchiveModule = function () {
+                var url = "allArchive.htm?___=_";
+
+                if ($("#txtName").val() != '')
+                    url += "&name=" + $("#txtName").val();
+
+                if ($("#mobile").val() != '')
+                    url += "&mobile=" + $("#mobile").val();
+                if ($("#status").val() != '')
+                    url += "&status=" + $("#status").val();
+                if ($("#user_id").val() != '') {
+                    url += "&user_id=" + $("#user_id").val();
+                }
+                if ($("#customer_id_start").val() != '') {
+                    url += "&customer_id_start=" + $("#customer_id_start").val();
+                }
+                if ($("#customer_id_end").val() != '') {
+                    url += "&customer_id_end=" + $("#customer_id_end").val();
+                }
+                if ($("#resources_search").val() != '') {
+                    url += "&resources=" + $("#resources_search").val();
+                }
+                if ($("#customer_status").val() != '') {
+                    url += "&customer_status=" + $("#customer_status").val();
+                }
+                if ($("#allot_at_end").val() != '') {
+                    url += "&allot_at_end=" + $("#allot_at_end").val();
+                }
+                if ($("#allot_at_start").val() != '') {
+                    url += "&allot_at_start=" + $("#allot_at_start").val();
+                }
+                if ($("#operate_at_end").val() != '') {
+                    url += "&operate_at_end=" + $("#operate_at_end").val();
+                }
+                if ($("#operate_at_start").val() != '') {
+                    url += "&operate_at_start=" + $("#operate_at_start").val();
+                }
+                var backUrl = "${dynamicServer}/customer/customerInfo/index.htm";
+                var url1 = "${dynamicServer}/customer/customerInfo/"+url+"&backUrl=" + backUrl ;
+                bootbox.confirm("<h4 class='red'>你确定要全部归档吗?</h4>", function (result) {
+                    if (result) {
+                        window.location = url1;
+                    }
+                })
             }
         </script>
 </body>

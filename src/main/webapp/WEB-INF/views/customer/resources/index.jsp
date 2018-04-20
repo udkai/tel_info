@@ -111,7 +111,7 @@
             var resources = $(btn).parent().parent().prev().prev().prev().html();
             var create_at = $(btn).parent().parent().prev().prev().html();
             var backurl = "${dynamicServer}/customer/resources/index.htm";
-            var url = "delete.htm?&resources=" + resources + "&create_at="+create_at+"&backUrl=" + backurl;
+            var url = "deleteAll.htm?&resources=" + resources + "&create_at="+create_at+"&backUrl=" + backurl;
             bootbox.confirm("您确定要全部删除吗？", function (result) {
                 if (result) {
                     window.location = encodeURI(url);

@@ -51,7 +51,11 @@ public class CustomerAllotDao {
      * @return
      */
     public List<ResourcesIds>listResourcesSectionByID(String customer_id_start, String customer_id_end ){
-        String sql="select resources,id from t_customer_info where id>=? and id<=? order BY resources,id asc";
+        String sql="select resources,id from t_customer_info where archive_status=0 and id>=? and id<=? order BY resources,id asc";
+        return jdbcTemplate.query(sql,new Object[]{customer_id_start,customer_id_end},BeanPropertyRowMapper.newInstance(ResourcesIds.class));
+    }
+    public List<ResourcesIds>listUserSectionByID(String customer_id_start, String customer_id_end ){
+        String sql="select id from t_customer_info where archive_status=0 and id>=? and id<=? order BY id asc";
         return jdbcTemplate.query(sql,new Object[]{customer_id_start,customer_id_end},BeanPropertyRowMapper.newInstance(ResourcesIds.class));
     }
     /**
@@ -155,6 +159,15 @@ public class CustomerAllotDao {
         return jdbcTemplate.update(sql,new Object[]{id});
 }
     /**
+     * 删除业务员号段表信息
+     * @param id
+     * @return
+     */
+    public int deleteResourcesSectionById(Integer id){
+        String sql="delete from t_resources_section where id=?";
+        return jdbcTemplate.update(sql,new Object[]{id});
+    }
+    /**
      *取消分发
      * @param customer_id_start
      * @param customer_id_end
@@ -162,7 +175,7 @@ public class CustomerAllotDao {
      * @return
      */
     public int saveCancel(String customer_id_start, String customer_id_end,Integer user_id, String realname) {
-        String sql = "UPDATE t_customer_info SET user_name='', user_id=null ,status=0 ,remark=null,remark_status=0, WHERE archive_status=0 ";
+        String sql = "UPDATE t_customer_info SET user_name='', user_id=null ,status=0 ,allot_at=null,allot_by=null,remark=null,remark_status=0,customer_status=0 WHERE archive_status=0 ";
         sql+=createCancelSql(customer_id_start,customer_id_end,user_id);
         return jdbcTemplate.update(sql);
     }

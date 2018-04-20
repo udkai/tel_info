@@ -3,6 +3,7 @@ package com.balance.customer.dao;
 import ch.qos.logback.core.net.SyslogOutputStream;
 import com.balance.customer.VO.CustomerInfoSearchVO;
 import com.balance.customer.model.CustomerInfo;
+import com.balance.customer.model.Section;
 import com.balance.customer.model.User;
 import com.balance.customer.model.UserSection;
 import com.balance.util.page.PageUtil;
@@ -39,13 +40,32 @@ public class CustomerInfoDao {
 		}
 		return jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(UserSection.class));
 	}
+
+
+	public List<Section> listSection(Integer user_id){
+		String sql1="select user_id,user_name,gn,min(id) id_min,max(id) id_max from(select user_id,user_name,id-rownum gn,id from(select @ROW:=@ROW+1 AS rownum,id,user_id,user_name from( SELECT(select @ROW := 0),id,user_id,user_name from t_customer_info " ;
+		String sql2=" where user_id=? "	;
+		String sql3=" ORDER BY user_id, id) a) b) c GROUP BY user_id ,gn order by user_id,id_min";
+		String sql;
+		if(user_id!=null){
+			sql=sql1+sql2+sql3;
+			return jdbcTemplate.query(sql,new Object[]{user_id},BeanPropertyRowMapper.newInstance(Section.class));
+		}else{
+			sql=sql1+sql3;
+			return jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(Section.class));
+		}
+	}
 	public List<CustomerInfo> listAllAllot(){
 		String sql="select * from t_customer_info t where t.status=1 ORDER BY t.user_id,t.id asc";
 		List<CustomerInfo> list=jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(CustomerInfo.class));
 		return list;
 	}
+	public int deleteResourcesSection(String id_section_start,String id_section_end){
+		String sql="delete from t_resources_section where  id_section_start= ? and id_section_end=? ";
+		return jdbcTemplate.update(sql,new Object[]{id_section_start,id_section_end});
+	}
 	public int updateRelieve(String id_start, String id_end) {
-		String sql = "UPDATE t_customer_info SET user_name='', user_id=null ,status=0 WHERE archive_status=0 and id>="+id_start+" and id<="+id_end;
+		String sql = "UPDATE t_customer_info SET user_name='', user_id=null ,status=0,remark=null,remark_status=0,customer_status=0  WHERE archive_status=0 and id>="+id_start+" and id<="+id_end;
 		return jdbcTemplate.update(sql);
 	}
 	public int updateAllot(String id_start, String id_end,Integer userId,String userName,String allot_by,Date allot_at) {
@@ -198,6 +218,13 @@ public class CustomerInfoDao {
 	public int update(String customer_id){
 		String sql = "UPDATE t_customer_info SET archive_status=1 ,archive_time=now() where id in ("+customer_id+")";
 		return jdbcTemplate.update(sql);
+	}
+	public int update(CustomerInfoSearchVO customerInfoSearchVO){
+		String sql = "UPDATE t_customer_info SET archive_status=1 ,archive_time=now()";
+		sql+=createSql(customerInfoSearchVO);
+		NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
+		SqlParameterSource paramSource = new BeanPropertySqlParameterSource(customerInfoSearchVO);
+		return namedParameterJdbcTemplate.update(sql,paramSource);
 	}
 
 	public int delete(String customer_id_start,String customer_id_end) {

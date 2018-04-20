@@ -40,6 +40,8 @@ public class CustomerAllotService {
     }
 
     /**
+     * 分配客户
+     *
      * @param customer_id_start
      * @param customer_id_end
      * @param user_id
@@ -47,55 +49,86 @@ public class CustomerAllotService {
      * @return
      */
     public int saveAllot(String customer_id_start, String customer_id_end, int user_id, String username, String allot_by, Date allot_at) {
-
+//修改t_customer_info表
         customerAllotDao.saveAllot(customer_id_start, customer_id_end, user_id, username, allot_by, allot_at);
-        //修改业务员号段表
-        toUpdateUserSection(customer_id_start, customer_id_end, user_id, username, allot_at);
-       //修改名单来源号段表
-        List<ResourcesIds> list=listResourceSectionById(customer_id_start, customer_id_end);
-        toUpdateResourceSection(list, user_id, username, allot_at);
+        //找出名单表（t_customer_info）中未归档的客户并转成号段list
+//        List<String> listUserId = listUserSectionById(customer_id_start, customer_id_end);
+//        if (listUserId != null) {
+//            //修改业务员号段表
+//            toUpdateUserSection(listUserId, user_id, username, allot_at);
+//        }
+//        //找出名单表（t_customer_info）中未归档的客户并转成号段list
+//        List<ResourcesIds> list = listResourceSectionById(customer_id_start, customer_id_end);
+//        if (list != null) {
+//            //修改名单来源号段表
+//            toUpdateResourceSection(list, user_id, username, allot_at);
+//        }
         return 1;
     }
 
     /**
+     * 查询某个范围内的id并转为号段
+     *
+     * @param customer_id_start
+     * @param customer_id_end
+     * @return
+     */
+    private List listUserSectionById(String customer_id_start, String customer_id_end) {
+        List<ResourcesIds> list = customerAllotDao.listUserSectionByID(customer_id_start, customer_id_end);
+        if (list.size() <= 0) {
+            return null;
+        }
+        List<String> listId = new ArrayList<>();
+        for (ResourcesIds resourcesIds : list) {
+            listId.add(resourcesIds.getId());
+        }
+        List<String> listNum = toSection(listId);
+        return listNum;
+    }
+
+    /**
      * 查询某个范围内的来源并转为号段
+     *
      * @param customer_id_start
      * @param customer_id_end
      * @return
      */
     private List listResourceSectionById(String customer_id_start, String customer_id_end) {
         List<ResourcesIds> list = customerAllotDao.listResourcesSectionByID(customer_id_start, customer_id_end);
-        ResourcesIds res=new ResourcesIds();
-        List<String >list1=new ArrayList<>();
-        String resources1=list.get(0).getResources();
+        if (list.size() <= 0) {
+            return null;
+        }
+        ResourcesIds res = new ResourcesIds();
+        List<String> list1 = new ArrayList<>();
+        String resources1 = list.get(0).getResources();
         String resourcesi;
-        List<ResourcesIds>listTemp=new ArrayList<>();
-        for (int i=1;i<list.size();i++) {
+        List<ResourcesIds> listTemp = new ArrayList<>();
+        for (int i = 1; i < list.size(); i++) {
 
-            list1.add(list.get(i-1).getId());
+            list1.add(list.get(i - 1).getId());
             res.setResources(resources1);
             res.setId_list(list1);
-            resourcesi=list.get(i).getResources();
-            if(!resources1.equals(resourcesi)){
+            resourcesi = list.get(i).getResources();
+            if (!resources1.equals(resourcesi)) {
                 listTemp.add(res);
-                res=new ResourcesIds();
-                list1=new ArrayList<>();
+                res = new ResourcesIds();
+                list1 = new ArrayList<>();
             }
-            if(i==list.size()-1){
+            if (i == list.size() - 1) {
                 list1.add(list.get(i).getId());
                 res.setResources(resources1);
                 res.setId_list(list1);
                 listTemp.add(res);
             }
-            resources1=resourcesi;
+            resources1 = resourcesi;
         }
-        List<ResourcesIds>listResourcesSection=new ArrayList<>();
-        for(int i = 0; i < listTemp.size(); i++){
-          List id_list=listTemp.get(i).getId_list();
-          String resources=listTemp.get(i).getResources();
+        List<ResourcesIds> listResourcesSection = new ArrayList<>();
+        for (int i = 0; i < listTemp.size(); i++) {
+            List id_list = listTemp.get(i).getId_list();
+            String resources = listTemp.get(i).getResources();
             List<String> listNum = toSection(id_list);
             for (int j = 0; j < listNum.size(); j++) {
-                ResourcesIds resourceSection=new ResourcesIds();
+                ResourcesIds resourceSection = new ResourcesIds();
                 resourceSection.setResources(resources);
                 resourceSection.setId_section(listNum.get(j));
                 listResourcesSection.add(resourceSection);
@@ -113,8 +146,8 @@ public class CustomerAllotService {
     public List<String> toSection(List<String> arg) {
         List<String> list = new ArrayList();
         List<Integer> ids = new ArrayList();
-        for(String str:arg){
-            Integer num=Integer.valueOf(str);
+        for (String str : arg) {
+            Integer num = Integer.valueOf(str);
             ids.add(num);
         }
 
@@ -147,119 +180,188 @@ public class CustomerAllotService {
         }
         return list;
     }
+
     /**
      * 修改业务员号段表
-     * @param customer_id_start
-     * @param customer_id_end
+     *
      * @param user_id
      * @param username
      * @param allot_at
      */
-    private void toUpdateUserSection(String customer_id_start, String customer_id_end, int user_id, String username, Date allot_at) {
-        //分6种情况 修改业务员号段表
+    private void toUpdateUserSection(List<String> listCustomerSection, int user_id, String username, Date allot_at) {
+        //查出业务员号段表
         List<UserSection> list = customerAllotDao.listUserSection();
-        int id_start = Integer.valueOf(customer_id_start);
-        int id_end = Integer.valueOf(customer_id_end);
         UserSection userSectionOld1 = new UserSection();
         UserSection userSectionOld2 = new UserSection();
         UserSection userSectionNew = new UserSection();
         userSectionOld1.setAllot_at(allot_at);
         userSectionNew.setAllot_at(allot_at);
-        if(list.size()==0){
-            userSectionNew.setUser_name(username);
-            userSectionNew.setUser_id(user_id);
-            userSectionNew.setId_section_start(customer_id_start);
-            userSectionNew.setId_section_end(customer_id_end);
-        }
-        for (UserSection userSection : list) {
-            String idSectionStartStr = userSection.getId_section_start();
-            int idSectionStart = Integer.valueOf(idSectionStartStr);
-            String idSectionEndStr = userSection.getId_section_end();
-            int idSectionEnd = Integer.valueOf(idSectionEndStr);
-            int user_id_old = userSection.getUser_id();
-            String user_name_old = userSection.getUser_name();
-            int id = userSection.getId();
-            if (id_start < idSectionStart) {
-                if (id_end < idSectionEnd) {
-                    userSectionNew.setUser_name(username);
-                    userSectionNew.setUser_id(user_id);
-                    userSectionNew.setId_section_start(customer_id_start);
-                    userSectionNew.setId_section_end(customer_id_end);
-                }
-                if (id_end > idSectionStart && id_end < idSectionEnd) {
-                    customerAllotDao.deleteUserSectionById(id);
-                    if (!user_name_old.equals(username)) {
-                        userSectionOld2.setUser_name(user_name_old);
-                        userSectionOld2.setUser_id(user_id_old);
-                        userSectionOld2.setId_section_start(customer_id_end);
-                        userSectionOld2.setId_section_end(idSectionEndStr);
+        for (String userSections : listCustomerSection) {
+            String[] ids = userSections.split("-");
+            String customer_id_start = ids[0];
+            String customer_id_end = ids[1];
+            int id_start = Integer.valueOf(ids[0]);
+            int id_end = Integer.valueOf(ids[1]);
 
-                        userSectionNew.setUser_name(username);
-                        userSectionNew.setUser_id(user_id);
-                        userSectionNew.setId_section_start(customer_id_start);
-                        userSectionNew.setId_section_end(customer_id_end);
-                    } else {
-                        userSectionNew.setUser_name(username);
-                        userSectionNew.setUser_id(user_id);
-                        userSectionNew.setId_section_start(customer_id_start);
-                        userSectionNew.setId_section_end(idSectionEndStr);
-                    }
-                }
-                if (id_end > idSectionEnd) {
-                    customerAllotDao.deleteUserSectionById(id);
-                    userSectionNew.setUser_name(username);
-                    userSectionNew.setUser_id(user_id);
-                    userSectionNew.setId_section_start(customer_id_start);
-                    userSectionNew.setId_section_end(customer_id_end);
-                }
-            }
-
-
-            if (id_start > idSectionStart && id_start < idSectionEnd) {
-                if (id_end < idSectionStart) {
-                    customerAllotDao.deleteUserSectionById(id);
-                    if (!user_name_old.equals(username)) {
-                        userSectionOld1.setUser_name(user_name_old);
-                        userSectionOld1.setUser_id(user_id_old);
-                        userSectionOld1.setId_section_start(idSectionStartStr);
-                        userSectionOld1.setId_section_end(StringUtils.leftPad(String.valueOf(id_start - 1), 8, '0'));
-
-                        userSectionOld2.setUser_name(user_name_old);
-                        userSectionOld2.setUser_id(user_id_old);
-                        userSectionOld2.setId_section_start(StringUtils.leftPad(String.valueOf(id_end + 1), 8, '0'));
-                        userSectionOld2.setId_section_end(idSectionEndStr);
-
-                        userSectionNew.setUser_name(username);
-                        userSectionNew.setUser_id(user_id);
-                        userSectionNew.setId_section_start(customer_id_start);
-                        userSectionNew.setId_section_end(customer_id_end);
-                    }
-                }
-                if (id_end > idSectionEnd) {
-                    customerAllotDao.deleteUserSectionById(id);
-                    if (!user_name_old.equals(username)) {
-                        userSectionOld1.setUser_name(user_name_old);
-                        userSectionOld1.setUser_id(user_id_old);
-                        userSectionOld1.setId_section_start(idSectionStartStr);
-                        userSectionOld1.setId_section_end(StringUtils.leftPad(String.valueOf(id_start - 1), 8, '0'));
-
-                        userSectionNew.setUser_name(username);
-                        userSectionNew.setUser_id(user_id);
-                        userSectionNew.setId_section_start(customer_id_start);
-                        userSectionNew.setId_section_end(customer_id_end);
-                    } else {
-                        userSectionNew.setUser_name(username);
-                        userSectionNew.setUser_id(user_id);
-                        userSectionNew.setId_section_start(idSectionStartStr);
-                        userSectionNew.setId_section_end(customer_id_end);
-                    }
-                }
-            }
-            if (id_start > idSectionEnd) {
+            if (list.size() == 0) {
                 userSectionNew.setUser_name(username);
                 userSectionNew.setUser_id(user_id);
                 userSectionNew.setId_section_start(customer_id_start);
                 userSectionNew.setId_section_end(customer_id_end);
+            }
+            for (UserSection userSection : list) {
+                String idSectionStartStr = userSection.getId_section_start();
+                int idSectionStart = Integer.valueOf(idSectionStartStr);
+                String idSectionEndStr = userSection.getId_section_end();
+                int idSectionEnd = Integer.valueOf(idSectionEndStr);
+                int user_id_old = userSection.getUser_id();
+                String user_name_old = userSection.getUser_name();
+                int id = userSection.getId();
+                //1.小于
+                if (id_start < idSectionStart) {
+                    if(id_end < idSectionStart-1){
+                        userSectionNew.setUser_name(username);
+                        userSectionNew.setUser_id(user_id);
+                        if(userSectionNew.getId_section_start()==null) {
+                            userSectionNew.setId_section_start(customer_id_start);
+                        }
+                        userSectionNew.setId_section_end(customer_id_end);
+                    }else if(id_end == idSectionStart-1){
+                        if (!user_name_old.equals(username)) {
+                            userSectionNew.setUser_name(username);
+                            userSectionNew.setUser_id(user_id);
+                            if(userSectionNew.getId_section_start()==null) {
+                                userSectionNew.setId_section_start(customer_id_start);
+                            }
+                            userSectionNew.setId_section_end(customer_id_end);
+                        }else{
+                            customerAllotDao.deleteUserSectionById(id);
+                            userSectionNew.setUser_name(username);
+                            userSectionNew.setUser_id(user_id);
+                            if(userSectionNew.getId_section_start()==null) {
+                                userSectionNew.setId_section_start(customer_id_start);
+                            }
+                            userSectionNew.setId_section_end(idSectionEndStr);
+                        }
+                    }
+
+
+                  else if (id_end >= idSectionStart && id_end < idSectionEnd) {
+                        customerAllotDao.deleteUserSectionById(id);
+                        if (!user_name_old.equals(username)) {
+                            userSectionOld2.setUser_name(user_name_old);
+                            userSectionOld2.setUser_id(user_id_old);
+                            userSectionOld2.setId_section_start(StringUtils.leftPad(String.valueOf(id_end + 1), 8, '0'));
+                            userSectionOld2.setId_section_end(idSectionEndStr);
+
+                            userSectionNew.setUser_name(username);
+                            userSectionNew.setUser_id(user_id);
+                            if(userSectionNew.getId_section_start()==null) {
+                                userSectionNew.setId_section_start(customer_id_start);
+                            }
+                            userSectionNew.setId_section_end(customer_id_end);
+                        } else {
+                            userSectionNew.setUser_name(username);
+                            userSectionNew.setUser_id(user_id);
+                            if(userSectionNew.getId_section_start()==null) {
+                                userSectionNew.setId_section_start(customer_id_start);
+                            }
+                            userSectionNew.setId_section_end(idSectionEndStr);
+                        }
+                    } else if (id_end >= idSectionEnd) {
+                        customerAllotDao.deleteUserSectionById(id);
+                        userSectionNew.setUser_name(username);
+                        userSectionNew.setUser_id(user_id);
+                        if(userSectionNew.getId_section_start()==null) {
+                            userSectionNew.setId_section_start(customer_id_start);
+                        }
+                        userSectionNew.setId_section_end(customer_id_end);
+                    }
+                }
+//2.==
+                else if (id_start == idSectionStart) {
+                    if (id_end < idSectionEnd) {
+                        customerAllotDao.deleteUserSectionById(id);
+                        if (!user_name_old.equals(username)) {
+                            userSectionOld2.setUser_name(user_name_old);
+                            userSectionOld2.setUser_id(user_id_old);
+                            userSectionOld2.setId_section_start(StringUtils.leftPad(String.valueOf(id_end + 1), 8, '0'));
+                            userSectionOld2.setId_section_end(idSectionEndStr);
+
+                            userSectionNew.setUser_name(username);
+                            userSectionNew.setUser_id(user_id);
+                            userSectionNew.setId_section_start(customer_id_start);
+                            userSectionNew.setId_section_end(customer_id_end);
+                        }
+                    } else {
+                        userSectionNew.setUser_name(username);
+                        userSectionNew.setUser_id(user_id);
+                        userSectionNew.setId_section_start(customer_id_start);
+                        userSectionNew.setId_section_end(customer_id_end);
+                    }
+                }
+                //3.><
+                else if (id_start > idSectionStart && id_start < idSectionEnd+1) {
+                    if (id_end < idSectionEnd+1) {
+                        if (!user_name_old.equals(username)) {
+                            customerAllotDao.deleteUserSectionById(id);
+                            userSectionOld1.setUser_name(user_name_old);
+                            userSectionOld1.setUser_id(user_id_old);
+                            userSectionOld1.setId_section_start(idSectionStartStr);
+                            userSectionOld1.setId_section_end(StringUtils.leftPad(String.valueOf(id_start - 1), 8, '0'));
+
+                            userSectionOld2.setUser_name(user_name_old);
+                            userSectionOld2.setUser_id(user_id_old);
+                            userSectionOld2.setId_section_start(StringUtils.leftPad(String.valueOf(id_end + 1), 8, '0'));
+                            userSectionOld2.setId_section_end(idSectionEndStr);
+
+                            userSectionNew.setUser_name(username);
+                            userSectionNew.setUser_id(user_id);
+                            userSectionNew.setId_section_start(customer_id_start);
+                            userSectionNew.setId_section_end(customer_id_end);
+                        }
+                    } else if (id_end >= idSectionEnd+1) {
+                        if (!user_name_old.equals(username)) {
+                            userSectionOld1.setUser_name(user_name_old);
+                            userSectionOld1.setUser_id(user_id_old);
+                            userSectionOld1.setId_section_start(idSectionStartStr);
+                            userSectionOld1.setId_section_end(StringUtils.leftPad(String.valueOf(id_start - 1), 8, '0'));
+
+                            userSectionNew.setUser_name(username);
+                            userSectionNew.setUser_id(user_id);
+                            userSectionNew.setId_section_start(customer_id_start);
+                            userSectionNew.setId_section_end(customer_id_end);
+                        } else {
+                            customerAllotDao.deleteUserSectionById(id);
+                            userSectionNew.setUser_name(username);
+                            userSectionNew.setUser_id(user_id);
+                            userSectionNew.setId_section_start(idSectionStartStr);
+                            userSectionNew.setId_section_end(customer_id_end);
+                        }
+                    }
+                }
+                //4.==
+                else if (id_start == idSectionEnd+1) {
+                        if (!user_name_old.equals(username)) {
+                            userSectionNew.setUser_name(username);
+                            userSectionNew.setUser_id(user_id);
+                            userSectionNew.setId_section_start(customer_id_start);
+                            userSectionNew.setId_section_end(customer_id_end);
+                        }else{
+                            customerAllotDao.deleteUserSectionById(id);
+                            userSectionNew.setUser_name(username);
+                            userSectionNew.setUser_id(user_id);
+                            userSectionNew.setId_section_start(idSectionStartStr);
+                            userSectionNew.setId_section_end(customer_id_end);
+                        }
+                }
+                //5.==
+                else {
+                    userSectionNew.setUser_name(username);
+                    userSectionNew.setUser_id(user_id);
+                    userSectionNew.setId_section_start(customer_id_start);
+                    userSectionNew.setId_section_end(customer_id_end);
+                }
             }
         }
         if (userSectionOld1.getId_section_start() != null) {
@@ -271,16 +373,18 @@ public class CustomerAllotService {
         if (userSectionNew.getId_section_start() != null) {
             customerAllotDao.saveUserSection(userSectionNew);
         }
+
     }
 
 
     /**
      * 修改来源号段表
+     *
      * @param user_id
      * @param username
      * @param allot_at
      */
-    private void toUpdateResourceSection(List<ResourcesIds> listCustomerSection,int user_id, String username, Date allot_at) {
+    private void toUpdateResourceSection(List<ResourcesIds> listCustomerSection, int user_id, String username, Date allot_at) {
         //分6种情况 修改业务员号段表
         List<UserSection> list = customerAllotDao.listResourcesSection();
 //        int id_start = Integer.valueOf(customer_id_start);
@@ -288,20 +392,19 @@ public class CustomerAllotService {
         UserSection userSectionOld1 = new UserSection();
         UserSection userSectionOld2 = new UserSection();
         UserSection userSectionNew = new UserSection();
-        userSectionOld1.setAllot_at(allot_at);
         userSectionNew.setAllot_at(allot_at);
-        for(ResourcesIds resourcesIds:listCustomerSection) {
+        for (ResourcesIds resourcesIds : listCustomerSection) {
             String[] ids = resourcesIds.getId_section().split("-");
-            String customer_id_start=ids[0];
-            String customer_id_end=ids[0];
-            String resources=resourcesIds.getResources();
+            String customer_id_start = ids[0];
+            String customer_id_end = ids[1];
+            String resources_new = resourcesIds.getResources();
             int id_start = Integer.valueOf(ids[0]);
             int id_end = Integer.valueOf(ids[1]);
             if (list.size() == 0) {
                 userSectionNew.setUser_name(username);
                 userSectionNew.setUser_id(user_id);
                 userSectionNew.setAllot_at(allot_at);
-                userSectionNew.setResources(resources);
+                userSectionNew.setResources(resources_new);
                 userSectionNew.setId_section_start(customer_id_start);
                 userSectionNew.setId_section_end(customer_id_end);
             }
@@ -311,130 +414,165 @@ public class CustomerAllotService {
                 String idSectionEndStr = userSection.getId_section_end();
                 int idSectionEnd = Integer.valueOf(idSectionEndStr);
                 int user_id_old = userSection.getUser_id();
-                String resources_old=userSection.getResources();
+                String resources_old=userSectionOld1.getResources();
                 String user_name_old = userSection.getUser_name();
                 int id = userSection.getId();
+                //1.小于
                 if (id_start < idSectionStart) {
-                    if (id_end < idSectionEnd) {
+                    if(id_end < idSectionStart){
                         userSectionNew.setUser_name(username);
                         userSectionNew.setUser_id(user_id);
-                        userSectionNew.setResources(resources);
-                        userSectionNew.setAllot_at(allot_at);
-                        userSectionNew.setId_section_start(customer_id_start);
+                        userSectionNew.setResources(resources_new);
+                        if(userSectionNew.getId_section_start()==null) {
+                            userSectionNew.setId_section_start(customer_id_start);
+                        }
                         userSectionNew.setId_section_end(customer_id_end);
                     }
-                    if (id_end > idSectionStart && id_end < idSectionEnd) {
+                    else if (id_end >= idSectionStart && id_end < idSectionEnd) {
                         customerAllotDao.deleteUserSectionById(id);
-                        if (!user_name_old.equals(username)) {
                             userSectionOld2.setUser_name(user_name_old);
-                            userSectionOld2.setUser_id(user_id_old);
-                            userSectionOld2.setAllot_at(allot_at);
                             userSectionOld2.setResources(resources_old);
-                            userSectionOld2.setId_section_start(customer_id_end);
+                            userSectionOld2.setUser_id(user_id_old);
+                            userSectionOld2.setId_section_start(StringUtils.leftPad(String.valueOf(id_end + 1), 8, '0'));
                             userSectionOld2.setId_section_end(idSectionEndStr);
 
                             userSectionNew.setUser_name(username);
                             userSectionNew.setUser_id(user_id);
-                            userSectionNew.setAllot_at(allot_at);
-                            userSectionNew.setResources(resources);
-                            userSectionNew.setId_section_start(customer_id_start);
+                            userSectionNew.setResources(resources_new);
+                            if(userSectionNew.getId_section_start()==null) {
+                                userSectionNew.setId_section_start(customer_id_start);
+                            }
                             userSectionNew.setId_section_end(customer_id_end);
-                        } else {
-                            userSectionNew.setUser_name(username);
-                            userSectionNew.setUser_id(user_id);
-                            userSectionNew.setAllot_at(allot_at);
-                            userSectionNew.setResources(resources);
-                            userSectionNew.setId_section_start(customer_id_start);
-                            userSectionNew.setId_section_end(idSectionEndStr);
-                        }
-                    }
-                    if (id_end > idSectionEnd) {
+                    } else if (id_end >= idSectionEnd) {
                         customerAllotDao.deleteUserSectionById(id);
                         userSectionNew.setUser_name(username);
                         userSectionNew.setUser_id(user_id);
-                        userSectionNew.setResources(resources);
-                        userSectionNew.setId_section_start(customer_id_start);
+                        userSectionNew.setResources(resources_new);
+                        if(userSectionNew.getId_section_start()==null) {
+                            userSectionNew.setId_section_start(customer_id_start);
+                        }
                         userSectionNew.setId_section_end(customer_id_end);
                     }
                 }
-
-
-                if (id_start > idSectionStart && id_start < idSectionEnd) {
-                    if (id_end < idSectionStart) {
-                        customerAllotDao.deleteUserSectionById(id);
-                        if (!user_name_old.equals(username)) {
-                            userSectionOld1.setUser_name(user_name_old);
-                            userSectionOld1.setUser_id(user_id_old);
-                            userSectionOld1.setAllot_at(allot_at);
-                            userSectionOld1.setResources(resources_old);
-                            userSectionOld1.setId_section_start(idSectionStartStr);
-                            userSectionOld1.setId_section_end(StringUtils.leftPad(String.valueOf(id_start - 1), 8, '0'));
-
+//2.==
+                else if (id_start == idSectionStart) {
+                    customerAllotDao.deleteUserSectionById(id);
+                    if (id_end < idSectionEnd) {
+                        if (resources_new.equals(resources_old)||!user_name_old.equals(username)) {
                             userSectionOld2.setUser_name(user_name_old);
                             userSectionOld2.setUser_id(user_id_old);
-                            userSectionOld2.setAllot_at(allot_at);
                             userSectionOld2.setResources(resources_old);
                             userSectionOld2.setId_section_start(StringUtils.leftPad(String.valueOf(id_end + 1), 8, '0'));
                             userSectionOld2.setId_section_end(idSectionEndStr);
 
                             userSectionNew.setUser_name(username);
                             userSectionNew.setUser_id(user_id);
-                            userSectionNew.setAllot_at(allot_at);
-                            userSectionNew.setResources(resources);
+                            userSectionNew.setResources(resources_new);
                             userSectionNew.setId_section_start(customer_id_start);
                             userSectionNew.setId_section_end(customer_id_end);
                         }
+                    } else {
+                        userSectionNew.setUser_name(username);
+                        userSectionNew.setUser_id(user_id);
+                        userSectionNew.setResources(resources_new);
+                        userSectionNew.setId_section_start(customer_id_start);
+                        userSectionNew.setId_section_end(customer_id_end);
                     }
-                    if (id_end > idSectionEnd) {
+                }
+                //3.><
+                else if (id_start > idSectionStart && id_start < idSectionEnd) {
+                    if (id_end < idSectionEnd) {
                         customerAllotDao.deleteUserSectionById(id);
-                        if (!user_name_old.equals(username)) {
+                        if (resources_new.equals(resources_old)||!user_name_old.equals(username)) {
                             userSectionOld1.setUser_name(user_name_old);
                             userSectionOld1.setUser_id(user_id_old);
-                            userSectionOld1.setAllot_at(allot_at);
+                            userSectionOld1.setResources(resources_old);
+                            userSectionOld1.setId_section_start(idSectionStartStr);
+                            userSectionOld1.setId_section_end(StringUtils.leftPad(String.valueOf(id_start - 1), 8, '0'));
+
+                            userSectionOld2.setUser_name(user_name_old);
+                            userSectionOld2.setUser_id(user_id_old);
+                            userSectionOld2.setResources(resources_old);
+                            userSectionOld2.setId_section_start(StringUtils.leftPad(String.valueOf(id_end + 1), 8, '0'));
+                            userSectionOld2.setId_section_end(idSectionEndStr);
+
+                            userSectionNew.setUser_name(username);
+                            userSectionNew.setUser_id(user_id);
+                            userSectionNew.setResources(resources_new);
+                            userSectionNew.setId_section_start(customer_id_start);
+                            userSectionNew.setId_section_end(customer_id_end);
+                        }
+                    } else if (id_end >= idSectionEnd) {
+                        if (resources_new.equals(resources_old)||!user_name_old.equals(username)) {
+                            userSectionOld1.setUser_name(user_name_old);
+                            userSectionOld1.setUser_id(user_id_old);
                             userSectionOld1.setResources(resources_old);
                             userSectionOld1.setId_section_start(idSectionStartStr);
                             userSectionOld1.setId_section_end(StringUtils.leftPad(String.valueOf(id_start - 1), 8, '0'));
 
                             userSectionNew.setUser_name(username);
                             userSectionNew.setUser_id(user_id);
-                            userSectionNew.setAllot_at(allot_at);
-                            userSectionNew.setResources(resources);
+                            userSectionNew.setResources(resources_new);
                             userSectionNew.setId_section_start(customer_id_start);
                             userSectionNew.setId_section_end(customer_id_end);
                         } else {
                             userSectionNew.setUser_name(username);
                             userSectionNew.setUser_id(user_id);
-                            userSectionNew.setAllot_at(allot_at);
-                            userSectionNew.setResources(resources);
-                            userSectionNew.setId_section_start(idSectionStartStr);
-                            userSectionNew.setId_section_end(customer_id_end);
+                            userSectionNew.setResources(resources_new);
+                            userSectionNew.setId_section_start(customer_id_start);
+                            userSectionNew.setId_section_end(idSectionEndStr);
                         }
                     }
                 }
-                if (id_start > idSectionEnd) {
+                //4.==
+                else if (id_start == idSectionEnd) {
+                    if (id_end == idSectionEnd) {
+                        customerAllotDao.deleteUserSectionById(id);
+                            userSectionOld1.setUser_name(user_name_old);
+                            userSectionOld1.setUser_id(user_id_old);
+                            userSectionOld1.setResources(resources_old);
+                            userSectionOld1.setId_section_start(idSectionStartStr);
+                            userSectionOld1.setId_section_end(StringUtils.leftPad(String.valueOf(id_start - 1), 8, '0'));
 
+                            userSectionNew.setUser_name(username);
+                            userSectionNew.setUser_id(user_id);
+                            userSectionNew.setResources(resources_new);
+                            userSectionNew.setId_section_start(customer_id_start);
+                            userSectionNew.setId_section_end(customer_id_end);
+                        }
+
+                }
+                //5.>
+                else {
                     userSectionNew.setUser_name(username);
                     userSectionNew.setUser_id(user_id);
-                    userSectionNew.setAllot_at(allot_at);
-                    userSectionNew.setResources(resources);
+                    userSectionNew.setResources(resources_new);
                     userSectionNew.setId_section_start(customer_id_start);
                     userSectionNew.setId_section_end(customer_id_end);
                 }
             }
-            if (userSectionOld1.getId_section_start() != null) {
-                customerAllotDao.saveResourceSection(userSectionOld1);
-            }
-            if (userSectionOld2.getId_section_start() != null) {
-                customerAllotDao.saveResourceSection(userSectionOld2);
-            }
-            if (userSectionNew.getId_section_start() != null) {
-                customerAllotDao.saveResourceSection(userSectionNew);
-            }
+        }
+        if (userSectionOld1.getId_section_start() != null) {
+            customerAllotDao.saveResourceSection(userSectionOld1);
+        }
+        if (userSectionOld2.getId_section_start() != null) {
+            customerAllotDao.saveResourceSection(userSectionOld2);
+        }
+        if (userSectionNew.getId_section_start() != null) {
+            customerAllotDao.saveResourceSection(userSectionNew);
         }
     }
 
     public int saveCancel(String customer_id_start, String customer_id_end, Integer user_id, String realname) {
         customerAllotDao.saveCancel(customer_id_start, customer_id_end, user_id, realname);
+//       //删除t_user_section表的号段
+//        toDeleteUserSection(customer_id_start, customer_id_end);
+//        //删除t_resources_section号段
+//        toDeleteResourcesSection(customer_id_start, customer_id_end);
+        return 1;
+    }
+
+    private void toDeleteUserSection(String customer_id_start, String customer_id_end) {
         List<UserSection> list = customerAllotDao.listUserSection();
         int id_start = Integer.valueOf(customer_id_start);
         int id_end = Integer.valueOf(customer_id_end);
@@ -447,23 +585,39 @@ public class CustomerAllotService {
             int idSectionEnd = Integer.valueOf(idSectionEndStr);
             int user_id_old = userSection.getUser_id();
             String user_name_old = userSection.getUser_name();
+            Date allot_at=userSection.getAllot_at();
             int id = userSection.getId();
             if (id_start < idSectionStart) {
 
-                if (id_end > idSectionStart && id_end < idSectionEnd) {
+                if (id_end >= idSectionStart && id_end < idSectionEnd) {
                     customerAllotDao.deleteUserSectionById(id);
+                    userSectionOld2.setAllot_at(allot_at);
                     userSectionOld2.setUser_name(user_name_old);
                     userSectionOld2.setUser_id(user_id_old);
                     userSectionOld2.setId_section_start(StringUtils.leftPad(String.valueOf(id_end + 1), 8, '0'));
                     userSectionOld2.setId_section_end(idSectionEndStr);
-                }
-                if (id_end > idSectionEnd) {
+                }else if (id_end >= idSectionEnd) {
                     customerAllotDao.deleteUserSectionById(id);
                 }
             }
-            if (id_start > idSectionStart && id_start < idSectionEnd) {
+            else   if(id_start == idSectionStart){
+                customerAllotDao.deleteUserSectionById(id);
+                if (id_end < idSectionEnd) {
+                    userSectionOld2.setUser_name(user_name_old);
+                    userSectionOld2.setAllot_at(allot_at);
+                    userSectionOld2.setUser_id(user_id_old);
+                    userSectionOld2.setId_section_start(StringUtils.leftPad(String.valueOf(id_end + 1), 8, '0'));
+                    userSectionOld2.setId_section_end(idSectionEndStr);
+                }
+            }
+
+
+
+           else if (id_start > idSectionStart && id_start < idSectionEnd) {
+
                 customerAllotDao.deleteUserSectionById(id);
                 userSectionOld1.setUser_name(user_name_old);
+                userSectionOld1.setAllot_at(allot_at);
                 userSectionOld1.setUser_id(user_id_old);
                 userSectionOld1.setId_section_start(idSectionStartStr);
                 userSectionOld1.setId_section_end(StringUtils.leftPad(String.valueOf(id_start - 1), 8, '0'));
@@ -471,13 +625,106 @@ public class CustomerAllotService {
                 if (id_end < idSectionEnd) {
                     userSectionOld2.setUser_name(user_name_old);
                     userSectionOld2.setUser_id(user_id_old);
+                    userSectionOld1.setAllot_at(allot_at);
                     userSectionOld2.setId_section_start(StringUtils.leftPad(String.valueOf(id_end + 1), 8, '0'));
                     userSectionOld2.setId_section_end(idSectionEndStr);
                 }
             }
+            else if(id_start == idSectionEnd&&id_end == idSectionEnd){
+                customerAllotDao.deleteUserSectionById(id);
+                userSectionOld1.setUser_name(user_name_old);
+                userSectionOld1.setAllot_at(allot_at);
+                userSectionOld1.setUser_id(user_id_old);
+                userSectionOld1.setId_section_start(idSectionStartStr);
+                userSectionOld1.setId_section_end(StringUtils.leftPad(String.valueOf(id_start - 1), 8, '0'));
+            }
         }
-        return 1;
+        if (userSectionOld1.getId_section_start() != null) {
+            customerAllotDao.saveUserSection(userSectionOld1);
+        }
+        if (userSectionOld2.getId_section_start() != null) {
+            customerAllotDao.saveUserSection(userSectionOld2);
+        }
     }
 
+    /**
+     * 删除来源号段表号段
+     * @param customer_id_start
+     * @param customer_id_end
+     */
+    private void toDeleteResourcesSection(String customer_id_start, String customer_id_end) {
+        List<UserSection> list = customerAllotDao.listResourcesSection();
+        int id_start = Integer.valueOf(customer_id_start);
+        int id_end = Integer.valueOf(customer_id_end);
+        UserSection userSectionOld1 = new UserSection();
+        UserSection userSectionOld2 = new UserSection();
+        for (UserSection userSection : list) {
+            String idSectionStartStr = userSection.getId_section_start();
+            int idSectionStart = Integer.valueOf(idSectionStartStr);
+            String idSectionEndStr = userSection.getId_section_end();
+            int idSectionEnd = Integer.valueOf(idSectionEndStr);
+            int user_id_old = userSection.getUser_id();
+            String user_name_old = userSection.getUser_name();
+            String resources=userSection.getResources();
+            Date allot_at=userSection.getAllot_at();
+            int id = userSection.getId();
+            if (id_start < idSectionStart) {
+                if (id_end >= idSectionStart && id_end < idSectionEnd) {
+                    customerAllotDao.deleteResourcesSectionById(id);
+                    userSectionOld2.setAllot_at(allot_at);
+                    userSectionOld2.setUser_name(user_name_old);
+                    userSectionOld2.setResources(resources);
+                    userSectionOld2.setUser_id(user_id_old);
+                    userSectionOld2.setId_section_start(StringUtils.leftPad(String.valueOf(id_end + 1), 8, '0'));
+                    userSectionOld2.setId_section_end(idSectionEndStr);
+                }else if (id_end >= idSectionEnd) {
+                    customerAllotDao.deleteResourcesSectionById(id);
+                }
+            }
+            else   if(id_start == idSectionStart){
+                customerAllotDao.deleteResourcesSectionById(id);
+                if (id_end < idSectionEnd) {
+                    userSectionOld2.setUser_name(user_name_old);
+                    userSectionOld2.setAllot_at(allot_at);
+                    userSectionOld2.setResources(resources);
+                    userSectionOld2.setUser_id(user_id_old);
+                    userSectionOld2.setId_section_start(StringUtils.leftPad(String.valueOf(id_end + 1), 8, '0'));
+                    userSectionOld2.setId_section_end(idSectionEndStr);
+                }
+            }
+            else if (id_start > idSectionStart && id_start < idSectionEnd) {
+                customerAllotDao.deleteResourcesSectionById(id);
+                userSectionOld1.setUser_name(user_name_old);
+                userSectionOld1.setAllot_at(allot_at);
+                userSectionOld1.setResources(resources);
+                userSectionOld1.setUser_id(user_id_old);
+                userSectionOld1.setId_section_start(idSectionStartStr);
+                userSectionOld1.setId_section_end(StringUtils.leftPad(String.valueOf(id_start - 1), 8, '0'));
 
+                if (id_end < idSectionEnd) {
+                    userSectionOld2.setUser_name(user_name_old);
+                    userSectionOld2.setUser_id(user_id_old);
+                    userSectionOld2.setAllot_at(allot_at);
+                    userSectionOld2.setResources(resources);
+                    userSectionOld2.setId_section_start(StringUtils.leftPad(String.valueOf(id_end + 1), 8, '0'));
+                    userSectionOld2.setId_section_end(idSectionEndStr);
+                }
+            }
+            else if(id_start == idSectionEnd&&id_end == idSectionEnd){
+                customerAllotDao.deleteResourcesSectionById(id);
+                userSectionOld1.setUser_name(user_name_old);
+                userSectionOld1.setAllot_at(allot_at);
+                userSectionOld1.setResources(resources);
+                userSectionOld1.setUser_id(user_id_old);
+                userSectionOld1.setId_section_start(idSectionStartStr);
+                userSectionOld1.setId_section_end(StringUtils.leftPad(String.valueOf(id_start - 1), 8, '0'));
+            }
+        }
+        if (userSectionOld1.getId_section_start() != null) {
+            customerAllotDao.saveResourceSection(userSectionOld1);
+        }
+        if (userSectionOld2.getId_section_start() != null) {
+            customerAllotDao.saveResourceSection(userSectionOld2);
+        }
+    }
 }

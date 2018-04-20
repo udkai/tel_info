@@ -11,8 +11,9 @@
             text-align: center;
             color: white;
         }
-        input{
-            width:80px;
+
+        input {
+            width: 80px;
             max-width: 100%;
         }
     </style>
@@ -79,7 +80,7 @@
                                             <td>业务员</td>
                                             <td>
                                                 <select id="user_id" name="user_id" class="width-100">
-                                                    <option value="">请选择</option>
+                                                    <option value=" ">请选择</option>
                                                     <c:forEach items="${userList}" var="user">
                                                         <option value="${user.id}"
                                                                 <c:if test="${user.id==customerInfoSearchVO.user_id}">selected</c:if>>${user.realname}</option>
@@ -88,18 +89,6 @@
                                             </td>
 
 
-                                            <td>
-                                                <button class="btn btn-primary btn-sm" id="btnExport">
-                                                     导出
-                                                </button>
-                                            </td>
-                                            <td>
-                                                <a href="#student-modal" class="btn btn-primary btn-sm"
-                                                   data-backdrop="static"
-                                                   data-toggle="modal">
-                                                   导入</a>
-
-                                            </td>
                                         </tr>
                                         <tr>
                                             <td>客户编号</td>
@@ -116,14 +105,38 @@
                                             <td>
                                                 <select id="customer_status" name="customer_status" class="width-100">
                                                     <option value=" "> 全部</option>
-                                                    <option value="0" <c:if test="${customerInfoSearchVO.customer_status==0}">selected</c:if>>为空</option>
-                                                    <option value="1" <c:if test="${customerInfoSearchVO.customer_status==1}">selected</c:if>>空号</option>
-                                                    <option value="2" <c:if test="${customerInfoSearchVO.customer_status==2}">selected</c:if>>拒接</option>
-                                                    <option value="3" <c:if test="${customerInfoSearchVO.customer_status==3}">selected</c:if>>无人接听</option>
-                                                    <option value="4" <c:if test="${customerInfoSearchVO.customer_status==4}">selected</c:if>>尝试加微信</option>
-                                                    <option value="5" <c:if test="${customerInfoSearchVO.customer_status==5}">selected</c:if>>加微信通过</option>
-                                                    <option value="6" <c:if test="${customerInfoSearchVO.customer_status==6}">selected</c:if>>已经邀约</option>
-                                                    <option value="7" <c:if test="${customerInfoSearchVO.customer_status==7}">selected</c:if>>不需要</option>
+                                                    <option value="0"
+                                                            <c:if test="${customerInfoSearchVO.customer_status==0}">selected</c:if>>
+                                                        为空
+                                                    </option>
+                                                    <option value="1"
+                                                            <c:if test="${customerInfoSearchVO.customer_status==1}">selected</c:if>>
+                                                        空号
+                                                    </option>
+                                                    <option value="2"
+                                                            <c:if test="${customerInfoSearchVO.customer_status==2}">selected</c:if>>
+                                                        拒接
+                                                    </option>
+                                                    <option value="3"
+                                                            <c:if test="${customerInfoSearchVO.customer_status==3}">selected</c:if>>
+                                                        无人接听
+                                                    </option>
+                                                    <option value="4"
+                                                            <c:if test="${customerInfoSearchVO.customer_status==4}">selected</c:if>>
+                                                        尝试加微信
+                                                    </option>
+                                                    <option value="5"
+                                                            <c:if test="${customerInfoSearchVO.customer_status==5}">selected</c:if>>
+                                                        加微信通过
+                                                    </option>
+                                                    <option value="6"
+                                                            <c:if test="${customerInfoSearchVO.customer_status==6}">selected</c:if>>
+                                                        已经邀约
+                                                    </option>
+                                                    <option value="7"
+                                                            <c:if test="${customerInfoSearchVO.customer_status==7}">selected</c:if>>
+                                                        不需要
+                                                    </option>
                                                 </select>
                                             </td>
                                             <td>名单来源</td>
@@ -131,16 +144,7 @@
                                                        class="form-control  "
                                                        placeholder="" maxlength="8"
                                                        value="${customerInfoSearchVO.resources }"></td>
-                                            <td>
-                                                <button class="btn btn-primary btn-sm" id="btnSearch">
-                                                     查询
-                                                </button>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-primary btn-sm" id="btnDel">
-                                                    删除
-                                                </button>
-                                            </td>
+
 
                                         </tr>
                                         <tr>
@@ -160,15 +164,43 @@
                                             <td><input type="text" id="operate_at_end"
                                                        class="form-control " placeholder=""
                                                        value="${customerInfoSearchVO.operate_at_end }"></td>
-                                            <td>
-                                                <button class="btn btn-primary btn-sm" id="btnUserStatistics">
-                                                    业务员统计显示
-                                                </button>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-primary btn-sm" id="btnArchive">
-                                                    客户归档
-                                                </button>
+
+                                        </tr>
+                                        <tr>
+                                            <td colspan="8">
+                                                <div style="text-align: center">
+                                                    <button class="btn btn-primary btn-sm" id="btnSearch"
+                                                            style="margin-right: 30px">
+                                                        查询
+                                                    </button>
+
+                                                    <button class="btn btn-primary btn-sm" id="btnDel"
+                                                            style="margin-right: 30px">
+                                                        删除
+                                                    </button>
+                                                    <a href="#student-modal" class="btn btn-primary btn-sm"
+                                                       data-backdrop="static"
+                                                       data-toggle="modal" style="margin-right: 30px">
+                                                        导入</a>
+                                                    <button class="btn btn-primary btn-sm" id="btnExport"
+                                                            style="margin-right: 30px">
+                                                        导出
+                                                    </button>
+
+
+                                                    <button class="btn btn-primary btn-sm" id="btnArchive"
+                                                            style="margin-right: 30px">
+                                                        选择归档
+                                                    </button>
+                                                    <button class="btn btn-primary btn-sm" id="btnAllArchive"
+                                                            style="margin-right: 30px">
+                                                        全部归档
+                                                    </button>
+                                                    <button class="btn btn-primary btn-sm" id="btnUserStatistics"
+                                                            style="margin-right: 30px">
+                                                        业务员统计显示
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     </table>
@@ -363,6 +395,7 @@
                 $("#btnSearch").bind('click', searchModule);
                 $("#btnExport").bind('click', exportModule);
                 $("#btnArchive").bind('click', ArchiveModule);
+                $("#btnAllArchive").bind('click', allArchiveModule);
                 $("#btnUserStatistics").bind('click', userStatisticsModule);
                 $("#all_select").change(function () {
                     //全选复选框事件
@@ -482,14 +515,11 @@
                 })
             })
             //业务员统计显示
-           var userStatisticsModule=function () {
-
-               var url="listNumberSection.htm?";
-               if ($("#user_id").val() != '') {
-                   url += "user_id=" + $("#user_id").val();
-               }
-               window.location = encodeURI(url);
-           }
+            var userStatisticsModule = function () {
+                var url = "listNumberSection.htm?";
+                url += "user_id=" + $("#user_id").val();
+                window.location = encodeURI(url);
+            }
             // 查询方法
             var searchModule = function () {
                 var url = "index.htm?___=_";
@@ -516,17 +546,17 @@
                 if ($("#customer_status").val() != '') {
                     url += "&customer_status=" + $("#customer_status").val();
                 }
-                if($("#allot_at_end").val()!=''){
-                    url+="&allot_at_end="+$("#allot_at_end").val();
+                if ($("#allot_at_end").val() != '') {
+                    url += "&allot_at_end=" + $("#allot_at_end").val();
                 }
-                if($("#allot_at_start").val()!=''){
-                    url+="&allot_at_start="+$("#allot_at_start").val();
+                if ($("#allot_at_start").val() != '') {
+                    url += "&allot_at_start=" + $("#allot_at_start").val();
                 }
-                if($("#operate_at_end").val()!=''){
-                    url+="&operate_at_end="+$("#operate_at_end").val();
+                if ($("#operate_at_end").val() != '') {
+                    url += "&operate_at_end=" + $("#operate_at_end").val();
                 }
-                if($("#operate_at_start").val()!=''){
-                    url+="&operate_at_start="+$("#operate_at_start").val();
+                if ($("#operate_at_start").val() != '') {
+                    url += "&operate_at_start=" + $("#operate_at_start").val();
                 }
                 window.location = encodeURI(url);
             }
@@ -556,17 +586,17 @@
                 if ($("#customer_status").val() != '') {
                     url += "&customer_status=" + $("#customer_status").val();
                 }
-                if($("#allot_at_end").val()!=''){
-                    url+="&allot_at_end="+$("#allot_at_end").val();
+                if ($("#allot_at_end").val() != '') {
+                    url += "&allot_at_end=" + $("#allot_at_end").val();
                 }
-                if($("#allot_at_start").val()!=''){
-                    url+="&allot_at_start="+$("#allot_at_start").val();
+                if ($("#allot_at_start").val() != '') {
+                    url += "&allot_at_start=" + $("#allot_at_start").val();
                 }
-                if($("#operate_at_end").val()!=''){
-                    url+="&operate_at_end="+$("#operate_at_end").val();
+                if ($("#operate_at_end").val() != '') {
+                    url += "&operate_at_end=" + $("#operate_at_end").val();
                 }
-                if($("#operate_at_start").val()!=''){
-                    url+="&operate_at_start="+$("#operate_at_start").val();
+                if ($("#operate_at_start").val() != '') {
+                    url += "&operate_at_start=" + $("#operate_at_start").val();
                 }
                 window.location = encodeURI(url);
             }
@@ -610,6 +640,53 @@
                 var backUrl = "${dynamicServer}/customer/customerInfo/index.htm";
                 var url2 = "${dynamicServer}/customer/customerInfo/archive.htm?backUrl=" + backUrl + "&customer_id=" + customer_id;
                 window.location = encodeURI(url2);
+            }
+
+            //客户全部归档
+            var allArchiveModule = function () {
+                var url = "allArchive.htm?___=_";
+
+                if ($("#txtName").val() != '')
+                    url += "&name=" + $("#txtName").val();
+
+                if ($("#mobile").val() != '')
+                    url += "&mobile=" + $("#mobile").val();
+                if ($("#status").val() != '')
+                    url += "&status=" + $("#status").val();
+                if ($("#user_id").val() != '') {
+                    url += "&user_id=" + $("#user_id").val();
+                }
+                if ($("#customer_id_start").val() != '') {
+                    url += "&customer_id_start=" + $("#customer_id_start").val();
+                }
+                if ($("#customer_id_end").val() != '') {
+                    url += "&customer_id_end=" + $("#customer_id_end").val();
+                }
+                if ($("#resources_search").val() != '') {
+                    url += "&resources=" + $("#resources_search").val();
+                }
+                if ($("#customer_status").val() != '') {
+                    url += "&customer_status=" + $("#customer_status").val();
+                }
+                if ($("#allot_at_end").val() != '') {
+                    url += "&allot_at_end=" + $("#allot_at_end").val();
+                }
+                if ($("#allot_at_start").val() != '') {
+                    url += "&allot_at_start=" + $("#allot_at_start").val();
+                }
+                if ($("#operate_at_end").val() != '') {
+                    url += "&operate_at_end=" + $("#operate_at_end").val();
+                }
+                if ($("#operate_at_start").val() != '') {
+                    url += "&operate_at_start=" + $("#operate_at_start").val();
+                }
+                var backUrl = "${dynamicServer}/customer/customerInfo/index.htm";
+                var url1 = "${dynamicServer}/customer/customerInfo/"+url+"&backUrl=" + backUrl ;
+                bootbox.confirm("<h4 class='red'>你确定要全部归档吗?</h4>", function (result) {
+                    if (result) {
+                        window.location = url1;
+                    }
+                })
             }
         </script>
 </body>

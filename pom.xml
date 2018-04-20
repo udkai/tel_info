@@ -246,7 +246,7 @@
     </dependencies>
 
     <build>
-        <finalName>tel_info</finalName>
+        <finalName>tel_info1</finalName>
         <defaultGoal>compile</defaultGoal>
         <plugins>
             <plugin>
