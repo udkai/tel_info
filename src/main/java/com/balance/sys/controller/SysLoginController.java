@@ -108,7 +108,7 @@ public class SysLoginController {
         ModelAndView mv = new ModelAndView();
         UserSession userSession = SessionUtil.getUserSession(request);
         if (userSession != null) {
-            if (userSession.getType() == 1) {
+            if (userSession.getType() == 1||userSession.getType() == 3) {
                 mv.setViewName("/index");
             } else {
                 mv.setViewName("redirect:/customer/mobile/index.htm");

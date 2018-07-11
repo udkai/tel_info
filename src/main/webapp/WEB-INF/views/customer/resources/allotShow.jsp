@@ -53,13 +53,10 @@
                                     <td width=40>${st.index+1}</td>
                                     <td>${userSection.resources}</td>
                                     <td>${userSection.user_name}</td>
-                                    <td><fmt:formatDate value="${userSection.allot_at}"
-                                                        pattern="yyyy-MM-dd HH:mm:ss"/></td>
+                                    <td>${userSection.allot_at}</td>
                                     <td>${userSection.id_min}-${userSection.id_max}</td>
                                     <td>
                                         <div class="col-md-3">
-                                            <%--<input hidden value="${userSection.id}">--%>
-                                                <input hidden value="${userSection.user_id}">
                                             <button class="btn btn-primary btn-sm" id="btnCancel" onclick="relieve(this)">
                                                  解除分配
                                             </button>
@@ -91,16 +88,19 @@
              */
             var relieve=function(btn){
                 var idSection=$(btn).parent().parent().prev().html();
-                var resource=$(btn).parent().parent().siblings().eq(1).html();
-                var user_id=$(btn).prev().val();
-                var allot_at=$(btn).parent().parent().siblings().eq(3).html();
-//var id=$(btn).prev().val();
-                var backurl='${dynamicServer}/customer/resources/allotShow.htm?create_at=${create_at}&resources_allot=${resources}';
-
-                var url="relieves.htm?&idSection="+idSection+"&user_id="+user_id+"&resources="+resource+"&allot_at="+allot_at+"&backUrl="+backurl;
+                var backurl='${dynamicServer}/customer/resources/allotShow.htm?create_at=${create_at}&resources=${resources}';
+                var url="relieves.htm";
                 bootbox.confirm("您确定要解除分配吗？", function (result) {
                     if (result) {
-                        window.location = encodeURI(url);
+                        $.ajax({
+                            url:url,
+                            data:{"idSection":idSection},
+                            method:"post",
+                            datatype:"json",
+                            success:function(){
+                                window.location = encodeURI(backurl);
+                            }
+                        });
                     }
                 })
             }

@@ -2,9 +2,7 @@ package com.balance.customer.dao;
 
 import com.balance.customer.VO.CustomerAllotSearchVO;
 import com.balance.customer.model.CustomerInfo;
-import com.balance.customer.model.ResourcesIds;
 import com.balance.customer.model.User;
-import com.balance.customer.model.UserSection;
 import com.balance.util.page.PageUtil;
 import com.balance.util.string.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,38 +24,6 @@ public class CustomerAllotDao {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public List<UserSection>listUserSection(){
-        String sql="select * from t_user_section";
-        return jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(UserSection.class));
-    }
-    public List<UserSection>listResourceSection(){
-        String sql="select * from t_resources_section";
-        return jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(UserSection.class));
-    }
-
-    /**
-     * 查询来源号段表
-     * @return
-     */
-    public List<UserSection>listResourcesSection(){
-        String sql="select * from t_resources_section";
-        return jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(UserSection.class));
-    }
-
-    /**
-     * 查询用户信息表
-     * @param customer_id_start
-     * @param customer_id_end
-     * @return
-     */
-    public List<ResourcesIds>listResourcesSectionByID(String customer_id_start, String customer_id_end ){
-        String sql="select resources,id from t_customer_info where archive_status=0 and id>=? and id<=? order BY resources,id asc";
-        return jdbcTemplate.query(sql,new Object[]{customer_id_start,customer_id_end},BeanPropertyRowMapper.newInstance(ResourcesIds.class));
-    }
-    public List<ResourcesIds>listUserSectionByID(String customer_id_start, String customer_id_end ){
-        String sql="select id from t_customer_info where archive_status=0 and id>=? and id<=? order BY id asc";
-        return jdbcTemplate.query(sql,new Object[]{customer_id_start,customer_id_end},BeanPropertyRowMapper.newInstance(ResourcesIds.class));
-    }
     /**
      * 查询
      *
@@ -125,48 +91,6 @@ public class CustomerAllotDao {
         return jdbcTemplate.update(sql, new Object[]{username, user_id,allot_by,allot_at,customer_id_start,customer_id_end});
     }
 
-    /**
-     * 保存业务员号段表（t_user_section）信息
-     * @param userSection
-     * @return
-     */
-    public int saveUserSection(UserSection userSection){
-        String sql="insert into t_user_section(user_id,user_name,id_section_start,id_section_end)values(:user_id,:user_name,:id_section_start,:id_section_end)";
-    SqlParameterSource params = new BeanPropertySqlParameterSource(userSection);
-    NamedParameterJdbcTemplate namedJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
-    int count=namedJdbc.update(sql,params);
-    return count;
-}
-    /**
-     * 保存业务员号段表（t_user_section）信息
-     * @param userSection
-     * @return
-     */
-    public int saveResourceSection(UserSection userSection){
-        String sql="insert into t_resources_section(resources,allot_at,user_id,user_name,id_section_start,id_section_end)values(:resources,:allot_at,:user_id,:user_name,:id_section_start,:id_section_end)";
-        SqlParameterSource params = new BeanPropertySqlParameterSource(userSection);
-        NamedParameterJdbcTemplate namedJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
-        int count=namedJdbc.update(sql,params);
-        return count;
-    }
-    /**
-     * 删除业务员号段表信息
-     * @param id
-     * @return
-     */
-    public int deleteUserSectionById(Integer id){
-        String sql="delete from t_user_section where id=?";
-        return jdbcTemplate.update(sql,new Object[]{id});
-}
-    /**
-     * 删除业务员号段表信息
-     * @param id
-     * @return
-     */
-    public int deleteResourcesSectionById(Integer id){
-        String sql="delete from t_resources_section where id=?";
-        return jdbcTemplate.update(sql,new Object[]{id});
-    }
     /**
      *取消分发
      * @param customer_id_start

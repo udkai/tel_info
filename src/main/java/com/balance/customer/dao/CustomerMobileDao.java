@@ -43,6 +43,14 @@ public class CustomerMobileDao {
         }
         return null;
     }
+public CustomerInfo findPrevious(String id,int userId){
+        String sql="select * from t_customer_info where id<? and user_id=? ORDER BY id desc";
+        List<CustomerInfo>list=jdbcTemplate.query(sql,new Object[]{id,userId},BeanPropertyRowMapper.newInstance(CustomerInfo.class));
+        if(list.size()>0){
+            return list.get(0);
+        }
+        return null;
+}
     /**
      * 存储备注
      *

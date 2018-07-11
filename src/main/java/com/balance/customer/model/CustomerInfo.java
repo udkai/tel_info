@@ -27,84 +27,12 @@ public class CustomerInfo {
 private String allot_by;//分配人
 private Date allot_at;//分配时间
 
-	@Override
-	public String toString() {
-		return "CustomerInfo{" +
-				"id='" + id + '\'' +
-				", name='" + name + '\'' +
-				", mobile='" + mobile + '\'' +
-				", remark='" + remark + '\'' +
-				", remark_status=" + remark_status +
-				", user_id=" + user_id +
-				", user_name='" + user_name + '\'' +
-				", status=" + status +
-				", resources='" + resources + '\'' +
-				", customer_status=" + customer_status +
-				", archive_status=" + archive_status +
-				", create_by='" + create_by + '\'' +
-				", create_at=" + create_at +
-				", operate_by='" + operate_by + '\'' +
-				", operate_at=" + operate_at +
-				", archive_time=" + archive_time +
-				", allot_by='" + allot_by + '\'' +
-				", allot_at=" + allot_at +
-				'}';
-	}
-
-	public String getOperate_by() {
-		return operate_by;
-	}
-
-	public void setOperate_by(String operate_by) {
-		this.operate_by = operate_by;
-	}
-
-	public String getAllot_by() {
-		return allot_by;
-	}
-
-	public void setAllot_by(String allot_by) {
-		this.allot_by = allot_by;
-	}
-
-	public Date getAllot_at() {
-		return allot_at;
-	}
-
-	public void setAllot_at(Date allot_at) {
-		this.allot_at = allot_at;
-	}
-
-	public Date getArchive_time() {
-		return archive_time;
-	}
-
-	public void setArchive_time(Date archive_time) {
-		this.archive_time = archive_time;
-	}
-
-	public Integer getArchive_status() {
-		return archive_status;
-	}
-
-	public void setArchive_status(Integer archive_status) {
-		this.archive_status = archive_status;
-	}
-
 	public String getId() {
 		return id;
 	}
 
 	public void setId(String id) {
 		this.id = id;
-	}
-
-	public String getUser_name() {
-		return user_name;
-	}
-
-	public void setUser_name(String user_name) {
-		this.user_name = user_name;
 	}
 
 	public String getName() {
@@ -147,6 +75,14 @@ private Date allot_at;//分配时间
 		this.user_id = user_id;
 	}
 
+	public String getUser_name() {
+		return user_name;
+	}
+
+	public void setUser_name(String user_name) {
+		this.user_name = user_name;
+	}
+
 	public Integer getStatus() {
 		return status;
 	}
@@ -171,14 +107,13 @@ private Date allot_at;//分配时间
 		this.customer_status = customer_status;
 	}
 
-	public Date getCreate_at() {
-		return create_at;
+	public Integer getArchive_status() {
+		return archive_status;
 	}
 
-	public void setCreate_at(Date create_at) {
-		this.create_at = create_at;
+	public void setArchive_status(Integer archive_status) {
+		this.archive_status = archive_status;
 	}
-
 
 	public String getCreate_by() {
 		return create_by;
@@ -188,11 +123,19 @@ private Date allot_at;//分配时间
 		this.create_by = create_by;
 	}
 
-	public String getoperate_by() {
+	public Date getCreate_at() {
+		return create_at;
+	}
+
+	public void setCreate_at(Date create_at) {
+		this.create_at = create_at;
+	}
+
+	public String getOperate_by() {
 		return operate_by;
 	}
 
-	public void setoperate_by(String operate_by) {
+	public void setOperate_by(String operate_by) {
 		this.operate_by = operate_by;
 	}
 
@@ -204,4 +147,51 @@ private Date allot_at;//分配时间
 		this.operate_at = operate_at;
 	}
 
+	public Date getArchive_time() {
+		return archive_time;
+	}
+
+	public void setArchive_time(Date archive_time) {
+		this.archive_time = archive_time;
+	}
+
+	public String getAllot_by() {
+		return allot_by;
+	}
+
+	public void setAllot_by(String allot_by) {
+		this.allot_by = allot_by;
+	}
+
+	public Date getAllot_at() {
+		return allot_at;
+	}
+
+	public void setAllot_at(Date allot_at) {
+		this.allot_at = allot_at;
+	}
+
+	@Override
+	public String toString() {
+		return "CustomerInfo{" +
+				"id='" + id + '\'' +
+				", name='" + name + '\'' +
+				", mobile='" + mobile + '\'' +
+				", remark='" + remark + '\'' +
+				", remark_status=" + remark_status +
+				", user_id=" + user_id +
+				", user_name='" + user_name + '\'' +
+				", status=" + status +
+				", resources='" + resources + '\'' +
+				", customer_status=" + customer_status +
+				", archive_status=" + archive_status +
+				", create_by='" + create_by + '\'' +
+				", create_at=" + create_at +
+				", operate_by='" + operate_by + '\'' +
+				", operate_at=" + operate_at +
+				", archive_time=" + archive_time +
+				", allot_by='" + allot_by + '\'' +
+				", allot_at=" + allot_at +
+				'}';
+	}
 }

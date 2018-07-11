@@ -5,7 +5,6 @@ import com.balance.customer.VO.CustomerInfoSearchVO;
 import com.balance.customer.model.CustomerInfo;
 import com.balance.customer.model.Section;
 import com.balance.customer.model.User;
-import com.balance.customer.model.UserSection;
 import com.balance.customer.service.CustomerInfoService;
 import com.balance.util.code.SerialNumUtil;
 import com.balance.util.config.PubConfig;
@@ -13,7 +12,6 @@ import com.balance.util.controller.BaseController;
 import com.balance.util.date.DateUtil;
 import com.balance.util.file.FileUtil;
 import com.balance.util.global.GlobalConst;
-import com.balance.util.json.JsonUtil;
 import com.balance.util.page.PageNavigate;
 import com.balance.util.session.SessionUtil;
 import com.balance.util.string.StringUtil;
@@ -73,11 +71,12 @@ public class CustomerInfoController extends BaseController {
     @RequestMapping("/listNumberSection")
     public ModelAndView listNumberSection(HttpServletRequest request,Integer user_id) {
         ModelAndView mv = new ModelAndView();
-        List<Section> list = customerInfoService.listSection(user_id);
-        List<User> userList = customerInfoService.findUserList();
-        int count = list.size();
+
         int pageIndex = WebUtil.getSafeInt(request.getParameter("pageIndex"), 1);// 获取当前页数
         int pageSize = GlobalConst.pageSize;// 直接取全局变量，每页记录数
+        List<User> userList = customerInfoService.findUserList();
+        List<Section> list = customerInfoService.listSection(user_id,pageIndex, pageSize);
+        int count = customerInfoService.countSection(user_id);
         String url = pubConfig.getDynamicServer() + "/customer/customerInfo/listNumberSection.htm?";
         PageNavigate pageNavigate = new PageNavigate(url, pageIndex, pageSize, count);//
         mv.addObject("userList", userList);

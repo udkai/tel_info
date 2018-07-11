@@ -326,7 +326,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer no-margin-top"></div>
+                    <div class="row">
+                        <div class="col-xs-12">${ pageNavigate.pageModel}</div>
+                    </div>
                 </div>
                 <!-- /.modal-content -->
             </div>
@@ -453,9 +455,7 @@
              * @param btn
              */
             var relieve=function(btn){
-
                 var idSection=$(btn).parent().parent().prev().html();
-//                var id=$(btn).prev().val();
                 var backurl="${dynamicServer}/customer/customerInfo/listNumberSection.htm";
                 var url="relieve.htm?&idSection="+idSection+"&backUrl="+backurl;
                 bootbox.confirm("您确定要解除分配吗？", function (result) {

@@ -21,10 +21,6 @@ public class SuccessController {
 	public ModelAndView success(HttpServletRequest request, HttpServletResponse response) {
 		ModelAndView mv = new ModelAndView();
 		String backUrl = request.getParameter("backUrl");
-		String resources_allot=request.getParameter("resources_allot");
-		if(StringUtil.isNotNullOrEmpty(resources_allot)){
-			backUrl+="&resources_allot="+resources_allot;
-		}
 		if (backUrl.indexOf("http") == -1)
 			backUrl = pubConfig.getDynamicServer() + backUrl;
 		if(SessionUtil.getUserSession(request).getType()==2){

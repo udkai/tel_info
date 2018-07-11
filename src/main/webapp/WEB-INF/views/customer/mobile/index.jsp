@@ -55,11 +55,13 @@
                                                     <!-- #section:elements.form.input-state -->
                                                     <div class="form-group has-success">
                                                         <label
-                                                               class="col-xs-12 col-sm-3 control-label no-padding-right">随机号码</label>
+                                                                class="col-xs-12 col-sm-3 control-label no-padding-right">随机号码</label>
 
                                                         <div class="col-xs-12 col-sm-5">
 																	<span class="block input-icon input-icon-right">
-                                                                        <button id="btn_mobile" type="text" class="width-100 " style="height: 35px;">
+                                                                        <button id="btn_mobile" type="text"
+                                                                                class="width-100 "
+                                                                                style="height: 35px;">
                                                                         <c:if test="${customerInfo.mobile!=null}">
                                                                             <a href="tel:${customerInfo.mobile}">${customerInfo.mobile}</a>
                                                                         </c:if>
@@ -89,7 +91,9 @@
                                                                class="col-xs-12 col-sm-3 col-md-3 control-label no-padding-right">客户状态</label>
                                                         <div class="col-xs-12 col-sm-5">
 																	<span class="block input-icon input-icon-right">
-																		<select id="customer_status" name="customer_status" class="width-100">
+																		<select id="customer_status"
+                                                                                name="customer_status"
+                                                                                class="width-100">
                                                                             <option value="0">为空</option>
                                                                             <option value="1">空号</option>
                                                                             <option value="2">拒接</option>
@@ -108,21 +112,22 @@
                                         <hr/>
                                         <div class="clearfix">
                                             <div class="">
-                                            <button type="button"  class="btn btn-primary" id="btnSearch" style="padding: 3px;">
-                                                <span class="bigger-110">已备注</span>
-                                            </button>
+                                                <button type="button" class="btn btn-primary" id="btnSearch"
+                                                        style="padding: 3px;">
+                                                    <span class="bigger-110">已备注</span>
+                                                </button>
 
-                                            <button class="btn btn-success btn-next" onclick="saveRemark();"
-                                                    data-last="Finish" style="padding: 3px;">
-                                                下一条
-                                            </button>
-                                            <button class="btn btn-success btn-next" onclick="searchLast();"
-                                                    data-last="Finish" style="padding: 3px;">
-                                                上一条
-                                            </button>
-                                            <button class="btn btn-prev" id="btnClose" style="padding: 3px;">
-                                                退出
-                                            </button>
+                                                <button class="btn btn-success btn-next" onclick="saveRemark();"
+                                                        data-last="Finish" style="padding: 3px;">
+                                                    下一条
+                                                </button>
+                                                <button class="btn btn-success btn-next" onclick="searchLast();"
+                                                        data-last="Finish" style="padding: 3px;">
+                                                    上一条
+                                                </button>
+                                                <button class="btn btn-prev" id="btnClose" style="padding: 3px;">
+                                                    退出
+                                                </button>
                                             </div>
                                         </div>
                                     </div><!-- /.widget-main -->
@@ -141,8 +146,8 @@
 
                 //查看上一条
                 var searchLast = function () {
-                    var last_id=$("#last_id").val();
-                    if(last_id==""){
+                    var last_id = $("#last_id").val();
+                    if (last_id == "") {
                         return;
                     }
                     $.ajax({
@@ -155,23 +160,25 @@
                         },
                         async: false,
                         success: function (data) {
-                            var last_id=$("#id").val();
+                            var last_id = $("#id").val();
                             $("#last_id").val(last_id);
-                                var mobile_a='<a href="tel:"'+data.mobile+'>'+data.mobile+'</a>';
-                                $("#btn_mobile").html(mobile_a);
-                                $("#id").val(data.id);
-                                $("#remark").val(data.remark);
-                                $("#customer_status").val(data.customer_status);
+                            var mobile_a = '<a href="tel:"' + data.mobile + '>' + data.mobile + '</a>';
+                            $("#btn_mobile").html(mobile_a);
+                            $("#id").val(data.id);
+                            $("#remark").val(data.remark);
+                            $("#customer_status").val(data.customer_status);
                         }
                     });
                 }
 
 
-
-
                 //点击下一条
                 var saveRemark = function () {
-
+                    var customer_status = $("#customer_status").val();
+                    if (customer_status == 0) {
+                        bootbox.alert("请选择客户状态");
+                        return;
+                    }
                     $.ajax({
                         cache: true,
                         type: "POST",
@@ -180,15 +187,15 @@
                         data: {
                             "backUrl": "${backUrl}",
                             "remark": $("#remark").val(),
-                            "customer_status":$("#customer_status").val(),
+                            "customer_status": $("#customer_status").val(),
                             "id": $("#id").val()
                         },
                         async: false,
                         success: function (data) {
                             if (data.success) {
-                                var last_id=$("#id").val();
+                                var last_id = $("#id").val();
                                 $("#last_id").val(last_id);
-                                var mobile_a='<a href="tel:"'+data.mobile+'>'+data.mobile+'</a>';
+                                var mobile_a = '<a href="tel:"' + data.mobile + '>' + data.mobile + '</a>';
                                 $("#btn_mobile").html(mobile_a);
                                 $("#id").val(data.id);
                                 $("#remark").val("");

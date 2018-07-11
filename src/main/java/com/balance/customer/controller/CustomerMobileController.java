@@ -49,6 +49,15 @@ public class CustomerMobileController {
         return mv;
     }
 
+    @RequestMapping("/index1")
+    public void index1(HttpServletRequest request, HttpServletResponse response) {
+        CustomerInfo customerInfo = customerMobileService.getMobile(SessionUtil.getUserSession(request).getUser_id(), 0);
+        if(customerInfo==null){
+            WebUtil.outJson(response,"\"flag\":"+0);
+        }else{
+            WebUtil.outJson(response,customerInfo);
+        }
+    }
     /**
      * 查询上一条记录
      * @param request
@@ -57,12 +66,20 @@ public class CustomerMobileController {
      */
     @RequestMapping("/searchLast")
     public void searchLast(HttpServletRequest request,HttpServletResponse response,String id){
-        CustomerInfo customerInfo=customerMobileService.findByMobile(id);
+       int userId=SessionUtil.getUserSession(request).getUser_id();
+        CustomerInfo customerInfo=customerMobileService.findPrevious(id,userId);
         if(customerInfo!=null){
             WebUtil.out(response,JsonUtil.toStr(customerInfo));
         }
     }
 
+//    @RequestMapping("/searchLast")
+//    public void searchLast(HttpServletRequest request,HttpServletResponse response,String id){
+//        CustomerInfo customerInfo=customerMobileService.findByMobile(id);
+//        if(customerInfo!=null){
+//            WebUtil.out(response,JsonUtil.toStr(customerInfo));
+//        }
+//    }
 
     @RequestMapping("/saveRemark")
     public void saveRemark(HttpServletRequest request,HttpServletResponse response, String remark, String id,Integer customer_status) {
@@ -110,6 +127,17 @@ public class CustomerMobileController {
      * @param mobile
      * @return
      */
+//    @RequestMapping("/searchRemark")
+//    public void searchRemark(HttpServletRequest request,HttpServletResponse response, String mobile) {
+//        ModelAndView mv = new ModelAndView();
+//        Integer user_id=SessionUtil.getUserSession(request).getUser_id();
+//        CustomerInfo customerInfo = customerMobileService.searchRemarkByMobile(mobile,user_id);
+//        if (customerInfo == null) {
+//            WebUtil.out(response,"\"flag:\""+0);
+//        } else {
+//            WebUtil.outJson(response,customerInfo);
+//        }
+//    }
     @RequestMapping("/searchRemark")
     public ModelAndView searchRemark(HttpServletRequest request, String mobile) {
         ModelAndView mv = new ModelAndView();
@@ -128,7 +156,6 @@ public class CustomerMobileController {
 
         return mv;
     }
-
     /**
      * 修改备注
      *

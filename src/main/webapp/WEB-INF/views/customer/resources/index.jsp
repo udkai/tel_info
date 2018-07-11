@@ -51,8 +51,7 @@
                                 <tr>
                                     <td width=40>${st.index+1}</td>
                                     <td>${resources.resources}</td>
-                                    <td><fmt:formatDate value="${resources.create_at}"
-                                                        pattern="yyyy-MM-dd HH:mm:ss"/></td>
+                                    <td>${resources.import_time}</td>
                                     <td>${resources.total}</td>
                                     <td>
                                         <div class="col-md-4">
@@ -122,7 +121,7 @@
         var show = function (btn) {
             var resources = $(btn).parent().parent().prev().prev().prev().html();
             var create_at = $(btn).parent().parent().prev().prev().html();
-            var url = "allotShow.htm?&resources_allot=" + resources + "&create_at="+create_at;
+            var url = "allotShow.htm?&resources=" + resources + "&create_at="+create_at;
             window.location = encodeURI(url);
         }
     </script>

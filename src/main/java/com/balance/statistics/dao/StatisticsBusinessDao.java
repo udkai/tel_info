@@ -52,8 +52,8 @@ public class StatisticsBusinessDao {
     }
 
     public int count(StatisticsSearchVO statisticsSearchVO) {
-        String sql = "select count(DISTINCT(user_name)) from t_customer_info  t where t.user_name is not null";
-        sql += createSql(statisticsSearchVO);
+        String sql = "select count(*)  from t_sys_user t where t.role_id=2 ";
+        sql+=createSql1(statisticsSearchVO);
         SqlParameterSource sqlParameterSource = new BeanPropertySqlParameterSource(statisticsSearchVO);
         NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
         int count = namedParameterJdbcTemplate.queryForObject(sql, sqlParameterSource, Integer.class);
@@ -63,32 +63,36 @@ public class StatisticsBusinessDao {
 
     public List listAll(StatisticsSearchVO statisticsSearchVO ,int pageIndex, int pageSize) {
         String sql1 = "select '合计' user_name,\n" +
-                "sum(case t.`status` when 1 then 1 else 0 end ) as alloted ,\n" +
-                "sum(case t.customer_status when 0 then 0 else 1 end ) as called,\n" +
-                "sum(case  when\tt.customer_status=0 and t.status=1 then 1 else 0\tend ) as status0, \n" +
-                "sum(case t.customer_status when\t1 then 1 else 0\tend ) as status1,\n" +
-                "sum(case t.customer_status when\t2 then 1 else 0\tend ) as status2, \n" +
-                "sum(case t.customer_status when\t3 then 1 else 0\tend ) as status3,\n" +
-                "sum(case t.customer_status when\t4 then 1 else 0\tend ) as status4, \n" +
-                "sum(case t.customer_status when\t5 then 1 else 0\tend ) as status5,\n" +
-                "sum(case t.customer_status when\t6 then 1 else 0\tend ) as status6, \n" +
-                "sum(case t.customer_status when\t7 then 1 else 0\tend ) as status7 \n" +
-                "from t_customer_info t   where 1=1 \n";
-        String sql2 = " UNION ALL\n" +
-                "select t.user_name,\n" +
-                "sum(case t.`status` when 1 then 1 else 0 end ) as alloted ,\n" +
-                "sum(case t.customer_status when 0 then 0 else 1 end ) as called,\n" +
-                "sum(case  when\tt.customer_status=0 and t.status=1 then 1 else 0\tend ) as status0, \n" +
-                "sum(case t.customer_status when\t1 then 1 else 0\tend ) as status1,\n" +
-                "sum(case t.customer_status when\t2 then 1 else 0\tend ) as status2, \n" +
-                "sum(case t.customer_status when\t3 then 1 else 0\tend ) as status3,\n" +
-                "sum(case t.customer_status when\t4 then 1 else 0\tend ) as status4, \n" +
-                "sum(case t.customer_status when\t5 then 1 else 0\tend ) as status5,\n" +
-                "sum(case t.customer_status when\t6 then 1 else 0\tend ) as status6, \n" +
-                "sum(case t.customer_status when\t7 then 1 else 0\tend ) as status7 \n" +
-                "from t_customer_info t where 1=1 ";
-        String sql3 = " GROUP BY t.user_name  ";
-        String sql = sql1 + createSql(statisticsSearchVO) + sql2 + createSql(statisticsSearchVO) + sql3;
+                "sum(case a.`status` when 1 then 1 else 0 end ) as alloted ,\n" +
+                "sum(case  a.customer_status when 1 then 1 when 2 then 1 when 3 then 1 when 4 then 1 when 5 then 1 when 6 then 1 when 7 then 1 else 0 end ) as called,\n" +
+                "sum(case  when a.customer_status=0 and t.status=1 then 1 else 0\tend ) as status0, \n" +
+                "sum(case a.customer_status when\t1 then 1 else 0\tend ) as status1,\n" +
+                "sum(case a.customer_status when\t2 then 1 else 0\tend ) as status2, \n" +
+                "sum(case a.customer_status when\t3 then 1 else 0\tend ) as status3,\n" +
+                "sum(case a.customer_status when\t4 then 1 else 0\tend ) as status4, \n" +
+                "sum(case a.customer_status when\t5 then 1 else 0\tend ) as status5,\n" +
+                "sum(case a.customer_status when\t6 then 1 else 0\tend ) as status6, \n" +
+                "sum(case a.customer_status when\t7 then 1 else 0\tend ) as status7 \n" +
+                " from t_sys_user t  left join t_customer_info a on t.id=a.user_id  ";
+        String sql2="where t.role_id=2";
+
+        String sql3 = "  UNION ALL\n" +
+                "select t.realname,\n" +
+                "sum(case a.`status` when 1 then 1 else 0 end ) as alloted ,\n" +
+                "sum(case  a.customer_status when 1 then 1 when 2 then 1 when 3 then 1 when 4 then 1 when 5 then 1 when 6 then 1 when 7 then 1 else 0 end ) as called,\n" +
+                "sum(case  when a.customer_status=0 and t.status=1 then 1 else 0\tend ) as status0, \n" +
+                "sum(case a.customer_status when\t1 then 1 else 0\tend ) as status1,\n" +
+                "sum(case a.customer_status when\t2 then 1 else 0\tend ) as status2, \n" +
+                "sum(case a.customer_status when\t3 then 1 else 0\tend ) as status3,\n" +
+                "sum(case a.customer_status when\t4 then 1 else 0\tend ) as status4, \n" +
+                "sum(case a.customer_status when\t5 then 1 else 0\tend ) as status5,\n" +
+                "sum(case a.customer_status when\t6 then 1 else 0\tend ) as status6, \n" +
+                "sum(case a.customer_status when\t7 then 1 else 0\tend ) as status7 \n" +
+                " from t_sys_user t  left join t_customer_info a on t.id=a.user_id  ";
+
+        String sql4 = " where t.role_id=2   ";
+        String sql5=" GROUP BY t.realname";
+        String sql = sql1 + createSql(statisticsSearchVO) + sql2 + createSql1(statisticsSearchVO) + sql3+createSql(statisticsSearchVO)+sql4+createSql1(statisticsSearchVO)+sql5;
         sql = PageUtil.createMysqlPageSql(sql, pageIndex, pageSize);
         SqlParameterSource sqlParameterSource = new BeanPropertySqlParameterSource(statisticsSearchVO);
         NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
@@ -99,17 +103,23 @@ public class StatisticsBusinessDao {
     public String createSql(StatisticsSearchVO statisticsSearchVO) {
         String sql = "  ";
         if (statisticsSearchVO.getStartTime() != null) {
-            sql+=" and operate_at>=str_to_date(:startTime,'%Y-%m-%d')";
+            sql+=" and a.operate_at>=str_to_date(:startTime,'%Y-%m-%d')";
         }
         if (statisticsSearchVO.getEndTime() != null) {
-            sql+=" and operate_at<=str_to_date(:endTime,'%Y-%m-%d')";
+            sql+=" and a.operate_at<=str_to_date(:endTime,'%Y-%m-%d')";
         }
+//        if (statisticsSearchVO.getUser_id() != null) {
+//            sql += " and  a.user_id=:user_id";
+//        }
+        return sql;
+    }
+    public String createSql1(StatisticsSearchVO statisticsSearchVO) {
+        String sql = "  ";
         if (statisticsSearchVO.getUser_id() != null) {
-            sql += " and user_id=:user_id";
+            sql += " and  t.id=:user_id";
         }
         return sql;
     }
-
     /**
      * 查询所有业务员
      *

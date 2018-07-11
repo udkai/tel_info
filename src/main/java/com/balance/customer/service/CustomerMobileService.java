@@ -31,6 +31,16 @@ public class CustomerMobileService {
     public CustomerInfo findByMobile(String id){
         return customerMobileDao.findByMobile(id);
     }
+
+    /**
+     * 查询上一条记录
+     * @param id
+     * @param userId
+     * @return
+     */
+    public CustomerInfo findPrevious(String id ,int userId){
+        return customerMobileDao.findPrevious(id, userId);
+    }
     /**
      * 存储备注
      *

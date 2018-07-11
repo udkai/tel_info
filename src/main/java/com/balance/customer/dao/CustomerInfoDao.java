@@ -1,11 +1,9 @@
 package com.balance.customer.dao;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
 import com.balance.customer.VO.CustomerInfoSearchVO;
 import com.balance.customer.model.CustomerInfo;
 import com.balance.customer.model.Section;
 import com.balance.customer.model.User;
-import com.balance.customer.model.UserSection;
 import com.balance.util.page.PageUtil;
 import com.balance.util.string.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,51 +30,44 @@ public class CustomerInfoDao {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	public List<UserSection> listUserSection(Integer user_id){
-		String sql= "select id,user_id,user_name,id_section_start,id_section_end from t_user_section";
-		if(user_id!=null){
-			sql+=" where user_id=?";
-			return jdbcTemplate.query(sql,new Object[]{user_id},BeanPropertyRowMapper.newInstance(UserSection.class));
-		}
-		return jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(UserSection.class));
+
+public int countSection(Integer user_id){
+	String sql1="select count(*)from(select user_id,user_name,gn,min(id) id_min,max(id) id_max from(select user_id,user_name,id-rownum gn,id from(select @ROW:=@ROW+1 AS rownum,id,user_id,user_name from( SELECT(select @ROW := 0),id,user_id,user_name from t_customer_info  " ;
+	String sql2=" where user_id=? "	;
+	String sql3="where user_id is not null ";
+	String sql4=" ORDER BY user_id, id) a) b) c GROUP BY user_id ,gn order by user_id,id_min) d";
+	String sql;
+	if(user_id!=null){
+		sql=sql1+sql2+sql4;
+		return jdbcTemplate.queryForObject(sql,new Object[]{user_id},Integer.class);
+	}else{
+		sql=sql1+sql3+sql4;
+		return jdbcTemplate.queryForObject(sql,Integer.class);
 	}
-
-
-	public List<Section> listSection(Integer user_id){
-		String sql1="select user_id,user_name,gn,min(id) id_min,max(id) id_max from(select user_id,user_name,id-rownum gn,id from(select @ROW:=@ROW+1 AS rownum,id,user_id,user_name from( SELECT(select @ROW := 0),id,user_id,user_name from t_customer_info " ;
+}
+	public List<Section> listSection(Integer user_id,int pageIndex,int pageSize){
+		String sql1="select user_id,user_name,gn,min(id) id_min,max(id) id_max from(select user_id,user_name,id-rownum gn,id from(select @ROW:=@ROW+1 AS rownum,id,user_id,user_name from( SELECT(select @ROW := 0),id,user_id,user_name from t_customer_info  " ;
 		String sql2=" where user_id=? "	;
-		String sql3=" ORDER BY user_id, id) a) b) c GROUP BY user_id ,gn order by user_id,id_min";
+		String sql3="where user_id is not null ";
+		String sql4=" ORDER BY user_id, id) a) b) c GROUP BY user_id ,gn order by user_id,id_min";
 		String sql;
 		if(user_id!=null){
-			sql=sql1+sql2+sql3;
+			sql=sql1+sql2+sql4;
+			sql = PageUtil.createMysqlPageSql(sql, pageIndex, pageSize);
 			return jdbcTemplate.query(sql,new Object[]{user_id},BeanPropertyRowMapper.newInstance(Section.class));
 		}else{
-			sql=sql1+sql3;
+			sql=sql1+sql3+sql4;
+			sql = PageUtil.createMysqlPageSql(sql, pageIndex, pageSize);
 			return jdbcTemplate.query(sql,BeanPropertyRowMapper.newInstance(Section.class));
 		}
 	}
-	public List<CustomerInfo> listAllAllot(){
-		String sql="select * from t_customer_info t where t.status=1 ORDER BY t.user_id,t.id asc";
-		List<CustomerInfo> list=jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(CustomerInfo.class));
-		return list;
-	}
-	public int deleteResourcesSection(String id_section_start,String id_section_end){
-		String sql="delete from t_resources_section where  id_section_start= ? and id_section_end=? ";
-		return jdbcTemplate.update(sql,new Object[]{id_section_start,id_section_end});
-	}
 	public int updateRelieve(String id_start, String id_end) {
-		String sql = "UPDATE t_customer_info SET user_name='', user_id=null ,status=0,remark=null,remark_status=0,customer_status=0  WHERE archive_status=0 and id>="+id_start+" and id<="+id_end;
+		String sql = "UPDATE t_customer_info SET user_name=null, user_id=null ,status=0,remark=null,remark_status=0,customer_status=0,allot_at=null,allot_by=null, operate_at=null,operate_by=null WHERE archive_status=0 and id>="+id_start+" and id<="+id_end;
 		return jdbcTemplate.update(sql);
 	}
 	public int updateAllot(String id_start, String id_end,Integer userId,String userName,String allot_by,Date allot_at) {
 		String sql = "UPDATE t_customer_info SET user_name=?, user_id=? ,allot_by=?,allot_at=? WHERE archive_status=0 and id>="+id_start+" and id<="+id_end;
 		return jdbcTemplate.update(sql,userName,userId,allot_by,allot_at);
-	}
-	public int updateUserSection(UserSection userSection){
-		String sql="update  t_user_section set user_id=:user_id,user_name=:user_name where id=:id";
-		SqlParameterSource params = new BeanPropertySqlParameterSource(userSection);
-		NamedParameterJdbcTemplate namedJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
-		return namedJdbc.update(sql,params);
 	}
 	/**
 	 * 查询
@@ -85,7 +76,7 @@ public class CustomerInfoDao {
 	 * @return 客户信息列表
 	 */
 	public List<CustomerInfo> search(CustomerInfoSearchVO customerInfoSearchVO, int pageIndex, int pageSize) {
-		String sql = "select id,name,mobile,remark,remark_status,archive_status,resources,user_id,user_name,allot_at,operate_at from t_customer_info ";
+		String sql = "select id,name,mobile,remark,remark_status,archive_status,customer_status,resources,user_id,user_name,allot_at,operate_at from t_customer_info ";
 		sql += createSql(customerInfoSearchVO);
 		sql = PageUtil.createMysqlPageSql(sql, pageIndex, pageSize);
 		SqlParameterSource params = new BeanPropertySqlParameterSource(customerInfoSearchVO);
@@ -236,20 +227,5 @@ public class CustomerInfoDao {
 		List<CustomerInfo> list = jdbcTemplate.query(sql, new Object[] { id }, BeanPropertyRowMapper.newInstance(CustomerInfo.class));
 		return list.size() > 0 ? list.get(0) : null;
 
-	}
-	public CustomerInfo getByMobile(String mobile){
-		String sql="select * from t_customer_info WHERE mobile=?";
-		List<CustomerInfo> list = jdbcTemplate.query(sql, new Object[] { mobile }, BeanPropertyRowMapper.newInstance(CustomerInfo.class));
-		return list.size() > 0 ? list.get(0) : null;
-
-	}
-	/**
-	 * 删除业务员号段表信息
-	 * @param id
-	 * @return
-	 */
-	public int deleteUserSectionById(Integer id){
-		String sql="delete from t_user_section where id=?";
-		return jdbcTemplate.update(sql,new Object[]{id});
 	}
 }

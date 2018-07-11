@@ -1,5 +1,6 @@
 package com.balance.customer.dao;
 
+import com.alibaba.druid.util.MySqlUtils;
 import com.balance.customer.model.*;
 import com.balance.util.page.PageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class ResourcesDao {
      * @return 客户信息列表
      */
     public List<ResourcesInfo> list(int pageIndex, int pageSize) {
-        String sql = "select t.resources,t.create_at,count(t.create_at) total from t_customer_info t GROUP BY t.resources,t.create_at order by t.create_at desc ";
+        String sql = "select t.resources,date_format(t.create_at,'%Y-%m-%d') import_time,count(*) total from t_customer_info t GROUP BY resources, import_time order by import_time desc ";
         sql = PageUtil.createMysqlPageSql(sql, pageIndex, pageSize);
         List<ResourcesInfo> list = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ResourcesInfo.class));
         if (list.size() > 0) {
@@ -33,14 +34,11 @@ public class ResourcesDao {
         return null;
     }
 
+
+
     public int count() {
-        String sql = "select count(*) from (select t.resources,t.create_at,count(t.create_at) from t_customer_info t GROUP BY t.resources,t.create_at ) r";
+        String sql = "select count(*) from (select t.resources,date_format(t.create_at,'%Y-%m-%d') import_time,count(*) from t_customer_info t GROUP BY resources,import_time ) r";
         int count = jdbcTemplate.queryForObject(sql, Integer.class);
-        return count;
-    }
-    public int countSection(String resources,String create_at) {
-        String sql="select count(*) from(SELECT user_id,user_name,resources,allot_at,gn,min(id) id_min,max(id) id_max FROM(SELECT user_id,user_name,resources,allot_at,id - rownum gn,id FROM(SELECT @ROW :=@ROW + 1 AS rownum,id,user_id,user_name,resources,allot_atFROM(SELECT(SELECT @ROW := 0),id,user_id,user_name ,resources,allot_at FROM t_customer_info where resources=? and create_at=str_to_date(?,'%Y-%m-%d %H:%i:%s') ORDER BY resources,user_id,allot_at,id )a)b)c GROUP BY user_id,gn ) d";
-        int count = jdbcTemplate.queryForObject(sql,new Object[]{resources,create_at}, Integer.class);
         return count;
     }
 
@@ -51,44 +49,30 @@ public class ResourcesDao {
      * @return
      */
     public int relieve(String resources, String create_at) {
-        String sql = "update t_customer_info t set t.status=0 where t.resources=? and t.create_at=STR_TO_DATE(?,'%Y-%m-%d %H:%i:%s') and t.archive_status=0";
+        String sql = "UPDATE t_customer_info t SET remark=null,remark_status=0, user_name=null, user_id=null ,status=0,customer_status=0,allot_at=null,allot_by=null,operate_at=null,operate_by=null where t.resources=? and date_format(t.create_at,'%Y-%m-%d')=? and t.archive_status=0";
         return jdbcTemplate.update(sql, resources, create_at);
     }
     public int delete(String resources, String create_at) {
-        String sql = "DELETE  from  t_customer_info  where resources=? and create_at=STR_TO_DATE(?,'%Y-%m-%d %H:%i:%s') ";
+        String sql = "DELETE  from  t_customer_info  where resources=? and date_format(create_at,'%Y-%m-%d')=? ";
         return jdbcTemplate.update(sql, resources, create_at);
     }
-    public int deleteResourceSection(String resources, String create_at) {
-        String sql = "DELETE  from  t_resources_section  where resources=?  ";
-        return jdbcTemplate.update(sql, resources);
-    }
-    public int deleteResourceSectionById(int id) {
-        String sql = "DELETE  from  t_resources_section  where id=? ";
-        return jdbcTemplate.update(sql, id);
-    }
-    public List<UserSection> listAllAllot(String resources){
-        String sql="select * from t_resources_section t where t.resources=?  ORDER BY t.user_id,t.id asc";
-        List<UserSection> list=jdbcTemplate.query(sql,new Object[]{resources},new BeanPropertyRowMapper<>(UserSection.class));
-        return list;
-    }
 
-    public List<Section>listSection(String resources,String create_at){
+    public int countSection(String resources,String create_at){
+        String sql="select count(*) from (SELECT user_id,user_name,resources,allot_at,gn,min(id) id_min,max(id) id_max " +
+                "FROM(SELECT user_id,user_name,resources,allot_at,id - rownum gn,id FROM(SELECT @ROW :=@ROW + 1 AS rownum,id,user_id,user_name,resources,allot_at FROM(SELECT(SELECT @ROW := 0),id,user_id,user_name ,resources,date_format(allot_at,'%Y-%m-%d')  allot_at FROM t_customer_info where resources=? and date_format(create_at,'%Y-%m-%d')=? ORDER BY resources,user_id,allot_at,id )a)b)c GROUP BY user_id,gn order by resources,user_id,allot_at,id_min) d";
+        return jdbcTemplate.queryForObject(sql,new Object[]{resources,create_at},Integer.class);
+
+    }
+    public List<Section>listSection(String resources,String create_at,int pageIndex,int pageSize){
         String sql="SELECT user_id,user_name,resources,allot_at,gn,min(id) id_min,max(id) id_max " +
-                "FROM(SELECT user_id,user_name,resources,allot_at,id - rownum gn,id FROM(SELECT @ROW :=@ROW + 1 AS rownum,id,user_id,user_name,resources,allot_at FROM(SELECT(SELECT @ROW := 0),id,user_id,user_name ,resources,allot_at FROM t_customer_info where resources=? and create_at=str_to_date(?,'%Y-%m-%d %H:%i:%s') ORDER BY resources,user_id,allot_at,id )a)b)c GROUP BY user_id,gn order by resources,user_id,allot_at,id_min";
+                "FROM(SELECT user_id,user_name,resources,allot_at,id - rownum gn,id FROM(SELECT @ROW :=@ROW + 1 AS rownum,id,user_id,user_name,resources,allot_at FROM(SELECT(SELECT @ROW := 0),id,user_id,user_name ,resources,date_format(allot_at,'%Y-%m-%d') allot_at FROM t_customer_info where resources=? and date_format(create_at,'%Y-%m-%d')=? ORDER BY resources,user_id,allot_at,id )a)b)c GROUP BY user_id,gn order by resources,user_id,allot_at,id_min";
+       sql= PageUtil.createMysqlPageSql(sql, pageIndex, pageSize);
         return jdbcTemplate.query(sql,new Object[]{resources,create_at},BeanPropertyRowMapper.newInstance(Section.class));
     }
 
-    public int updateRelieves(String resources,Integer user_id,String allot_at,String id_start, String id_end) {
-        String sql = "UPDATE t_customer_info SET remark='',remark_status=0, user_name='', user_id=null ,status=0,customer_status=0  WHERE archive_status=0 and resources=? and user_id=? and allot_at=STR_TO_DATE(?,'%Y-%m-%d %H:%i:%s') and id>=? and id<=?";
-        int count= jdbcTemplate.update(sql,resources,user_id,allot_at,id_start,id_end);
+    public int updateRelieves(String id_start, String id_end) {
+        String sql = "UPDATE t_customer_info SET remark=null,remark_status=0, user_name=null, user_id=null ,status=0,customer_status=0,allot_at=null,allot_by=null,operate_at=null,operate_by=null  WHERE archive_status=0 and id>=? and id<=?";
+        int count= jdbcTemplate.update(sql,id_start,id_end);
         return count;
-    }
-    public int deleteUserSection(String id_section_start,String id_section_end){
-        String sql="delete from t_user_section where  id_section_start= ? and id_section_end=? ";
-        return jdbcTemplate.update(sql,new Object[]{id_section_start,id_section_end});
-    }
-    public List<ResourcesIds>listIdByResources(String resources){
-        String sql="select id from t_customer_info where resources=? order by id asc";
-        return jdbcTemplate.query(sql,new Object[]{resources},BeanPropertyRowMapper.newInstance(ResourcesIds.class));
     }
 }

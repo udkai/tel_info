@@ -11,7 +11,7 @@ public class Section {
     private Integer user_id;//业务员id
     private String user_name;//业务员名字
     private String resources;//名单来源
-    private Date allot_at;//分配时间
+    private String allot_at;//分配时间
 
     public String getId_max() {
         return id_max;
@@ -53,11 +53,11 @@ public class Section {
         this.resources = resources;
     }
 
-    public Date getAllot_at() {
+    public String getAllot_at() {
         return allot_at;
     }
 
-    public void setAllot_at(Date allot_at) {
+    public void setAllot_at(String allot_at) {
         this.allot_at = allot_at;
     }
 

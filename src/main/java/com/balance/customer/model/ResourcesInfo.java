@@ -7,7 +7,7 @@ import java.util.Date;
  */
 public class ResourcesInfo {
     private String resources;//名单来源
-    private Date create_at;//导入时间
+    private String import_time;//导入时间
     private Integer total;//同一来源名单数量
 
     public String getResources() {
@@ -18,12 +18,12 @@ public class ResourcesInfo {
         this.resources = resources;
     }
 
-    public Date getCreate_at() {
-        return create_at;
+    public String getImport_time() {
+        return import_time;
     }
 
-    public void setCreate_at(Date create_at) {
-        this.create_at = create_at;
+    public void setImport_time(String import_time) {
+        this.import_time = import_time;
     }
 
     public Integer getTotal() {
@@ -38,7 +38,7 @@ public class ResourcesInfo {
     public String toString() {
         return "ResourcesInfo{" +
                 "resources='" + resources + '\'' +
-                ", create_at=" + create_at +
+                ", import_time='" + import_time + '\'' +
                 ", total=" + total +
                 '}';
     }

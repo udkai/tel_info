@@ -25,7 +25,7 @@
                 <ul class="breadcrumb">
                     <li><i class="ace-icon fa fa-home home-icon"></i> <a href="#">首页</a></li>
                     <li class="active">客户信息管理</li>
-                    <li class="active">资料分配2</li>
+                    <li class="active">资料分配</li>
                 </ul>
                 <!-- /.breadcrumb -->
             </div>
