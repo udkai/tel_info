@@ -106,7 +106,7 @@ public class StatisticsBusinessDao {
             sql+=" and a.operate_at>=str_to_date(:startTime,'%Y-%m-%d')";
         }
         if (statisticsSearchVO.getEndTime() != null) {
-            sql+=" and a.operate_at<=str_to_date(:endTime,'%Y-%m-%d')";
+            sql+=" and a.operate_at<=str_to_date(:endTime,'%Y-%m-%d')+1 ";
         }
 //        if (statisticsSearchVO.getUser_id() != null) {
 //            sql += " and  a.user_id=:user_id";
@@ -116,7 +116,7 @@ public class StatisticsBusinessDao {
     public String createSql1(StatisticsSearchVO statisticsSearchVO) {
         String sql = "  ";
         if (statisticsSearchVO.getUser_id() != null) {
-            sql += " and  t.id=:user_id";
+            sql += " and  t.id=:user_id ";
         }
         return sql;
     }

@@ -106,7 +106,7 @@ public class StatisticsResourcesDao {
             sql+=" and operate_at>=str_to_date(:startTime,'%Y-%m-%d')";
         }
         if (statisticsSearchVO.getEndTime() != null) {
-            sql+=" and operate_at<=str_to_date(:endTime,'%Y-%m-%d')";
+            sql+=" and operate_at<=str_to_date(:endTime,'%Y-%m-%d')+1 ";
         }
 
         if (StringUtil.isNotNullOrEmpty(statisticsSearchVO.getResources())) {
